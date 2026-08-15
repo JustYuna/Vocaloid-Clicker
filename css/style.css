@@ -1,0 +1,171 @@
+:root {
+    --color-main: rgb(100, 115, 175);
+    --color-darker-main: rgb(75, 100, 145);
+    --color-darkest-main: rgb(50, 75, 125);
+    --color-secondary: rgb(150, 250, 172);
+    --color-text: rgb(37, 37, 37);
+    --color-box-shadow: rgb(50, 70, 95);
+}
+
+@font-face {
+    font-family: 'Montserrat-Black';
+    src: url('../assets//font/Montserrat-Black.ttf') format('truetype');
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    background: linear-gradient(180deg, var(--color-main) 0%, var(--color-main) 75%, var(--color-darkest-main) 100%);
+    font-family: Montserrat-Black;
+    overflow: hidden;
+}
+
+button, p, h1, h2, h3 {
+    font-family: Montserrat-Black;
+    color: var(--color-text)
+}
+
+.topbar {
+    width: 100%;
+    height: 5%;
+    background-color: var(--color-darkest-main);
+}
+
+.section.left {
+    padding-left: 2.5%;
+    padding-right: 2.5%;
+    left: 0px;
+    top: 7.5%;
+    bottom: 0%;
+    width: 33%;
+    height: 92.5%;
+    position: absolute;
+}
+
+.section.middle {
+    padding-left: 2.5%;
+    padding-right: 2.5%;
+    left: 25%;
+    top: 7.5%;
+    bottom: 0%;
+    width: 33%;
+    height: 92.5%;
+    position: absolute;
+}
+
+.sectionLeft.info {
+    position: absolute;
+    top: 7.5%;
+    left: 25%;
+}
+
+.section.right {
+    padding-left: 2.5%;
+    padding-right: 2.5%;
+    right: 0px;
+    top: 7.5%;
+    bottom: 0%;
+    width: 33%;
+    height: 92.5%;
+    position: absolute;
+}
+
+.main.buttonAnchor {
+    position: absolute;
+    left: 50%;
+    top: 30%;
+}
+
+.main.button {
+    width: 256px;
+    height: 256px;
+    left: -128px;
+    top: -128px;
+    position: absolute;
+    border-radius: 100%;
+    box-shadow: 5px 5px 5px var(--color-box-shadow);
+}
+
+.main.buttonImage {
+    width: 100%;
+
+    content: url('../assets/images/MiguCircle.png');
+}
+
+.achievements {
+    width: 100%;
+    height: 30%;
+    overflow-y: scroll;
+    scrollbar-color: var(--color-darkest-main) transparent;
+    scrollbar-width: thin;
+}
+
+.upgrade.amount {
+    width: 95%;
+    height: 3%;
+    display: grid;
+    grid-template-columns: 33% 33% 33%;
+    overflow: hidden;
+}
+
+.upgrade.amountButton {
+    height: 90%;
+    background-color: transparent;
+
+    border-top-width: 0px;
+    border-bottom-width: 0px;
+    border-right-width: 0px;
+    border-left-width: 0px;
+}
+
+.upgrade.amountButton:hover {
+    font-size: large;
+}
+
+.upgrade.list {
+    width: 100%;
+    height: 80%;
+
+    overflow-y: scroll;
+    scrollbar-color: var(--color-darkest-main) transparent;
+    scrollbar-width: thin;
+}
+
+.upgrade.locked {
+    width: 95%;
+    background-color: rgb(133, 163, 143);
+    border-width: 0%;
+    border-radius: 5px;
+    padding: 1em;
+    box-shadow: 5px 5px 5px var(--color-box-shadow);
+}
+
+.upgrade.unlocked {
+    width: 95%;
+    background-color: rgb(150, 250, 172);
+    border-width: 0%;
+    border-radius: 5px;
+    padding: 1em;
+    box-shadow: 5px 5px 5px var(--color-box-shadow);
+}
+
+.title {
+    font-size: large;
+    text-align: center;
+    width: 100%;
+}
+
+.medium.title {
+    font-size: medium;
+    text-align: center;
+    width: 100%;
+}
+
+.small.title {
+    font-size: small;
+    text-align: center;
+    width: 100%;
+}
