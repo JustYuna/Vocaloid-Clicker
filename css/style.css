@@ -48,7 +48,9 @@ button, p, h1, h2, h3 {
 .sectionLeft.info {
     position: absolute;
     top: 7.5%;
+    left: 0%;
     width: 100%;
+    background: linear-gradient(90deg, var(--color-main) 0%, var(--color-darker-main) 50%, var(--color-main) 100%);
 }
 
 .section.middle {
