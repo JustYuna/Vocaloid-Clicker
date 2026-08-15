@@ -104,7 +104,9 @@
             };
 
             var tempData = {
-                purchaseAmount: 1
+                purchaseAmount: 1,
+                lastNoteTitle: "",
+                lastNotePerSecond: "",
             };
             var userData = {
                 points: 0,
@@ -291,8 +293,19 @@
             }; Dev.Debug("onClicked function ready", "loading");
 
             function UpdatePointsCount() {
-                document.querySelector("#points_current").innerHTML = format.abbreviate(Math.round(userData.points)) + " Music notes";
-                document.querySelector("#points_per_second").innerHTML = "~ " + format.abbreviate(Math.round(userData.income)) + " per second ~";
+                var notes = format.abbreviate(Math.round(userData.points));
+
+                if (tempData.lastNoteTitle != notes) {
+                    tempData.lastNoteTitle = notes
+                    document.querySelector("#points_current").innerHTML = notes + " Music notes";
+                };
+
+                var perSecond = format.abbreviate(Math.round(userData.income));
+
+                if (tempData.lastNotePerSecond != perSecond) {
+                    tempData.lastNotePerSecond = perSecond
+                    document.querySelector("#points_per_second").innerHTML = "~ " + perSecond + " per second ~";
+                };
                 document.title = format.abbreviate(Math.round(userData.points)) + " notes - Volcaloid Clicker"
             };
 

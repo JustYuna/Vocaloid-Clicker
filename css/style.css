@@ -45,6 +45,12 @@ button, p, h1, h2, h3 {
     position: absolute;
 }
 
+.sectionLeft.info {
+    position: absolute;
+    top: 7.5%;
+    width: 100%;
+}
+
 .section.middle {
     padding-left: 2.5%;
     padding-right: 2.5%;
@@ -54,12 +60,6 @@ button, p, h1, h2, h3 {
     width: 33%;
     height: 92.5%;
     position: absolute;
-}
-
-.sectionLeft.info {
-    position: absolute;
-    top: 7.5%;
-    left: 25%;
 }
 
 .section.right {
