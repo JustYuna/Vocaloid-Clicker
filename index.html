@@ -166,7 +166,7 @@
                     },
                     KagamineLen: {
                         amount: 0,
-                        cost: 1_500_000,
+                        cost: 1.5e6,
                         income: 1_250,
 
                         unlocked: false,
@@ -176,43 +176,53 @@
                     },
                     AdachiRei: {
                         amount: 0,
-                        cost: 7_500_000,
+                        cost: 7.5e6,
                         income: 3_000,
 
                         unlocked: false,
 
                         name: "Adachi Rei",
-                        desc: "Placeholder..."
+                        desc: "This heat is pretty abnormal"
                     },
                     EleanorForte: {
                         amount: 0,
-                        cost: 25_000_000,
+                        cost: 25e6,
                         income: 8_500,
 
                         unlocked: false,
 
                         name: "Eleanor Forte",
-                        desc: "Placeholder..."
+                        desc: "They said it looked like rain"
                     },
                     YiXi: {
                         amount: 0,
-                        cost: 100_000_000,
+                        cost: 100e6,
                         income: 25_000,
 
                         unlocked: false,
 
                         name: "Xi Yi",
-                        desc: "Beaware, bites!"
+                        desc: "Animal cannibal"
                     },
                     MagurineLuka: {
                         amount: 0,
-                        cost: 650_000_000,
+                        cost: 650e6,
                         income: 75_000,
 
                         unlocked: false,
 
                         name: "Magurine Luka",
                         desc: "The fish will never be forgotten..."
+                    },
+                    HakaineMaiko: {
+                        amount: 0,
+                        cost: 2.5e9,
+                        income: 250_000,
+
+                        unlocked: false,
+
+                        name: "Hakaine Maiko",
+                        desc: "Perfection!"
                     }
                 },
                 achievements: [
@@ -382,7 +392,12 @@
 
     <body onload="AutoUpdater(); loadCookies()">
         <div class="topbar">
-
+            <div>
+                <image></image>
+                <a href="https://discord.gg/rPAMv59wPM" >
+                    <img border="0" alt="Placeholder" src="url('./assets/img/discord.png')" width="100" height="100">
+                </a>
+            </div>
         </div>
         <div>
             <div class="section left">
@@ -396,7 +411,7 @@
                 </div>
                 <div class="main buttonAnchor">
                     <button class="main button"; onclick="userData.points += (1 + userData.upgradeMultiplier); userData.totalPoints += (1 + userData.upgradeMultiplier); UpdatePointsCount()">
-                        <img src="url('../assets/img/MiguCircle.png')"; style="width: 100%;">
+                        <img src="url('./assets/img/MiguCircle.png')"; style="width: 100%;">
                     </button>
                 </div>
             </div>
