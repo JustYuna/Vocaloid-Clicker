@@ -54,6 +54,56 @@
 
                     userData.income = income;
                     Dev.Debug("Syncing income complete." + income, "sync");
+                },
+
+                upgradeList: (force) => {
+                    var needsReset = force | false;
+                    for (i in userData.upgrades) {
+                        var data = userData.upgrades[i];
+
+                        if (upgradeCache[data.name] != data.amount) { 
+                            needsReset = true;
+                            upgradeCache[data.name] = data.amount;
+                        };
+                    };
+
+                    if (!needsReset) return;
+                    document.querySelector("#upgrades").innerHTML = "";
+
+                    for (i in userData.upgrades) {
+                        var data = userData.upgrades[i];
+                        var text = "Could not fetch";
+                        var price = helper.calculateUpgradeCost(data.cost, data.amount, tempData.purchaseAmount);
+                        var cost = format.abbreviate(price);
+                        var income = format.abbreviate(data.income)
+
+                        if (userData.totalPoints < data.cost) {
+                            document.querySelector("#upgrades").innerHTML += `<br><div>
+                                <button class="upgrade locked">??? • Cost: ${cost}<br>???/s • ???</button>
+                            </div>`;
+                        } else {
+                            document.querySelector("#upgrades").innerHTML += `<br><div>
+                            <button class="upgrade unlocked"; onclick="onClicked('buy_upgrade', '${i}')">${data.name} • Cost: ${cost}<br>${income}/s • ${data.desc}</button>
+                            </div>`;
+                        };
+                    };
+                },
+
+                pointHeader: () => {  
+                    var notes = format.abbreviate(Math.round(userData.points));
+
+                    if (tempData.lastNoteTitle != notes) {
+                        tempData.lastNoteTitle = notes
+                        document.querySelector("#points_current").innerHTML = notes + " Music notes";
+                    };
+
+                    var perSecond = format.abbreviate(Math.round(userData.income));
+
+                    if (tempData.lastNotePerSecond != perSecond) {
+                        tempData.lastNotePerSecond = perSecond
+                        document.querySelector("#points_per_second").innerHTML = "~ " + perSecond + " per second ~";
+                    };
+                    document.title = format.abbreviate(Math.round(userData.points)) + " notes - Volcaloid Clicker"
                 }
             };
         </script>
@@ -81,7 +131,7 @@
             };
         </script>
 
-        <!-- >> MAIN << -->
+        <!-- >> KEEP DATA HERE FOR SANITY << -->
         <script>
             var Dev = {
                 types: {
@@ -231,42 +281,12 @@
                     { req: "userData.totalPoints>999", gotten: false, text: "Note production", desc: "Earn your first 1.000 music notes" }
                 ]
             };
+        </script>
 
+        <!-- >> MAIN << -->
+        <script>
             upgradeCache = {};
             functions = {
-                update_upgrades: () => {
-                    var needsReset = false;
-                    for (i in userData.upgrades) {
-                        var data = userData.upgrades[i];
-
-                        if (upgradeCache[data.name] != data.amount) { 
-                            needsReset = true;
-                            upgradeCache[data.name] = data.amount;
-                        };
-                    };
-
-                    if (!needsReset) return;
-                    document.querySelector("#upgrades").innerHTML = "";
-
-                    for (i in userData.upgrades) {
-                        var data = userData.upgrades[i];
-                        var text = "Could not fetch";
-                        var price = helper.calculateUpgradeCost(data.cost, data.amount, tempData.purchaseAmount);
-                        var cost = format.abbreviate(price);
-                        var income = format.abbreviate(data.income)
-
-                        if (userData.totalPoints < data.cost) {
-                            document.querySelector("#upgrades").innerHTML += `<br><div>
-                                <button class="upgrade locked">??? • Cost: ${cost}<br>???/s • ???</button>
-                            </div>`;
-                        } else {
-                            document.querySelector("#upgrades").innerHTML += `<br><div>
-                            <button class="upgrade unlocked"; onclick="onClicked('buy_upgrade', '${i}')">${data.name} • Cost: ${cost}<br>${income}/s • ${data.desc}</button>
-                            </div>`;
-                        };
-                    };
-                },
-
                 buy_upgrade: (name) => {
                     var data = userData.upgrades[name];
 
@@ -281,6 +301,18 @@
                     userData.points -= price;
                     data.amount++;
                     sync.income();
+                    sync.upgradeList();
+                },
+
+                changeBulk: (amount) => {
+                    var valid = [1, 10, 100];
+                    if (!valid.includes(amount)) return;
+
+                    document.querySelector(`#bulkButton${amount}`).className = "bulkButtonSelected";
+                    document.querySelector(`#bulkButton${tempData.purchaseAmount}`).className = "bulkButton";
+
+                    tempData.purchaseAmount = amount;
+                    sync.upgradeList(true);
                 }
             };
 
@@ -301,23 +333,6 @@
                     console.error("Called invalid function: " + Todo + "\nData: " + Data);
                 };
             }; Dev.Debug("onClicked function ready", "loading");
-
-            function UpdatePointsCount() {
-                var notes = format.abbreviate(Math.round(userData.points));
-
-                if (tempData.lastNoteTitle != notes) {
-                    tempData.lastNoteTitle = notes
-                    document.querySelector("#points_current").innerHTML = notes + " Music notes";
-                };
-
-                var perSecond = format.abbreviate(Math.round(userData.income));
-
-                if (tempData.lastNotePerSecond != perSecond) {
-                    tempData.lastNotePerSecond = perSecond
-                    document.querySelector("#points_per_second").innerHTML = "~ " + perSecond + " per second ~";
-                };
-                document.title = format.abbreviate(Math.round(userData.points)) + " notes - Volcaloid Clicker"
-            };
 
             function loadCookies() {
                 var got = Cookies.get("user_data")
@@ -358,7 +373,8 @@
                     userData.points += userData.income / 5;
 
                     // sync gui
-                    onClicked("update_upgrades");
+                    sync.upgradeList();
+                    sync.pointHeader();
 
                     // achievements
                     for (i in userData.achievements) {
@@ -366,12 +382,18 @@
                         var b = new Function("return " + achievement.req);
                         if (b() && !achievement.gotten) {
                             userData.achievements[i].gotten = true;
-                            document.querySelector("#achievements").innerHTML += `<br>ACHIEVEMENT UNLOCKED<br>${achievement.text}<br>${achievement.desc}<br>`;
+                            document.querySelector("#achievements").innerHTML += `<br>
+                            <div>
+                                <div class="title"; style="height: 70%;" id="points_current">
+                                    ${achievement.text}
+                                </div>
+                                <div class="small title" style="height: 30%;" id="points_per_second">
+                                    ${achievement.desc}
+                                </div>
+                            </div>`
                             Dev.Debug("Unlocked achievement: " + achievement.text);
                         };
                     };
-
-                    UpdatePointsCount();
 
                     Dev.delay++;
                     if (Dev.delay > Dev.saveInteraval) {
@@ -392,12 +414,8 @@
 
     <body onload="AutoUpdater(); loadCookies()">
         <div class="topbar">
-            <div>
-                <image></image>
-                <a href="https://discord.gg/rPAMv59wPM" >
-                    <img border="0" alt="Placeholder" src="url('./assets/img/discord.png')" width="100" height="100">
-                </a>
-            </div>
+            <a href="https://discord.gg/rPAMv59wPM" >Volcalhaven</a>
+            <a href="https://discord.gg/sPQFM9Rj33" >Yuna Codes</a>
         </div>
         <div>
             <div class="section left">
@@ -409,20 +427,20 @@
                         Loading...
                     </div>
                 </div>
-                <div class="main buttonAnchor">
-                    <button class="main button"; onclick="userData.points += (1 + userData.upgradeMultiplier); userData.totalPoints += (1 + userData.upgradeMultiplier); UpdatePointsCount()">
-                        <img src="url('./assets/img/MiguCircle.png')"; style="width: 100%;">
+                <div class="main buttonAnchor">UpdatePointsCount
+                    <button class="main button"; onclick="userData.points += (1 + userData.upgradeMultiplier); userData.totalPoints += (1 + userData.upgradeMultiplier); sync.pointHeader();">
+                        <img src="./assets/img/MiguCircle.png"; style="width: 100%;">
                     </button>
                 </div>
             </div>
             <div class="section middle">
-                <div id="achievement"; class="achievements"></div>
+                <div id="achievements"; class="achievements"></div>
             </div>
             <div class="section right">
                 <div class="upgrade amount">
-                    <button class="upgrade amountButton"; id="amount_button_1">x1</button>
-                    <button class="upgrade amountButton"; id="amount_button_10">x10</button>
-                    <button class="upgrade amountButton"; id="amount_button_100">x100</button>
+                    <button onclick="onClicked('changeBulk', 1)"; class="bulkButtonSelected"; id="bulkButton1">x1</button>
+                    <button onclick="onClicked('changeBulk', 10)"; class="bulkButton"; id="bulkButton10">x10</button>
+                    <button onclick="onClicked('changeBulk', 100)"; class="bulkButton"; id="bulkButton100">x100</button>
                 </div>
                 <div id="upgrades"; class="upgrade list"></div>
             </div>
