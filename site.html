@@ -249,7 +249,7 @@ I probaly have to revisit old functions to revise as this is my first project th
         // Main settings
         // • • • • • • • • • • • • • • • •
 
-        game.tick = 5;
+        game.tick = 30;
         game.delays = {
             save: {
                 delay: 0,
@@ -468,7 +468,7 @@ I probaly have to revisit old functions to revise as this is my first project th
                 if (game.data.music < price) return;
 
                 game.data.music -= price;
-                data.amount++;
+                data.amount += game.tempData.purchaseAmount;
                 game.sync.income();
                 game.sync.upgradeList();
             },
