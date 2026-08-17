@@ -291,7 +291,6 @@ I probaly have to revisit old functions to revise as this is my first project th
                     game.tempData.lastNotePerSecond = perSecond;
                     document.querySelector("#points_per_second").innerHTML = "~ " + perSecond + " per second ~";
                 };
-                document.title = songs + " notes - Volcaloid Clicker";
             },
 
             all: () => {
@@ -322,6 +321,13 @@ I probaly have to revisit old functions to revise as this is my first project th
                 interval: 1 * 5,
                 perform: () => {
                     game.sync.upgradeList();
+                }
+            },
+            siteTitle: {
+                delay: 0,
+                interval: 5 * 5,
+                perform: () => {
+                    document.title = game.helper.format.abbreviate(Math.round(game.data.songs)) + " songs - Volcaloid Clicker";
                 }
             }
         };
@@ -470,6 +476,40 @@ I probaly have to revisit old functions to revise as this is my first project th
 
                 game.data.achievements[escapeSpace(name)] = me;
             },
+            newTiered: function(name, desc, objective, param) {
+                var me = {};
+                me.id = game.achievements.id;
+                me.name = name;
+                me.earned = false;
+                game.achievements.id++;
+
+                if (typeof param == "number") {
+                    var amounts = [1, 50, 100];
+                    str = "Have " + amounts[param] + " " + objective;
+                } else { // there it is... params that i prob never will use again
+                    var todo = param.todo;
+                    var extra = param.extra;
+                    if (!extra) extra = [];
+                    var str = "";
+                    if (!todo) {
+                        console.warn("Incomplete tiered todo", name, desc, objective, param);
+                        return false;
+                    };
+
+                    if (todo == "overwrite") {
+                        if (extra.includes("no_abbreviate")) {// uuh yes
+                            str = "Have " + param.amount + " " + objective;
+                        } else {
+                            str = "Have " + game.helper.format.abbreviate(param.amount) + " " + objective;
+                        };
+                    };
+                };
+
+                if (desc == "") {  me.desc = str; } else me.desc = desc;
+
+                game.data.achievements[escapeSpace(name)] = me;
+                console.log(me);
+            },
             award: function(name) {
                 if (game.data.achievements[escapeSpace(name)]?.earned) return;
 
@@ -479,45 +519,40 @@ I probaly have to revisit old functions to revise as this is my first project th
         };
 
         {
-            game.achievements.new("First song", "Earn your first song");
-            game.achievements.new("Small published", "Earn 100 song's");
-            game.achievements.new("Song production", "Earn 1.000 songs");
-            game.achievements.new("VIP", "Earn 1.337 songs");
-            game.achievements.new("Golden", "Earn 1.000.000 songs");
+            game.achievements.newTiered("First song", "Earn your first song", "", 0);
+            game.achievements.newTiered("Small published", "", "songs", 2);
+            game.achievements.newTiered("Song production", "", "songs", { todo: "overwrite", amount: 1_000 });
+            game.achievements.newTiered("VIP", "Earn 1337 songs", "", { todo: "overwrite", amount: 1337, extra: ["no_abbreviate"] });
+            game.achievements.newTiered("Golden", "Earn 1.000.000 songs", "", { todo: "overwrite", amount: 1_000_000 });
 
             game.achievements.id = 1000;
 
-            game.achievements.new("Kasane Teto", "Unlock Kasane Teto");
-            game.achievements.new("Baguette lover", "have 10x Kasane Teto");
-            game.achievements.new("Baguette bakery", "Have 50x Kasane Teto");
-            game.achievements.new("Teto teretory", "Have 100x Kasane Teto");
+            game.achievements.newTiered("Kasane Teto", "", "Kasane Teto", 0);
+            game.achievements.newTiered("Baguette lover", "", "Kasane Teto", 1);
+            game.achievements.newTiered("Teto teretory", "", "Kasane Teto", 2);
 
             game.achievements.id = 2000;
 
-            game.achievements.new("Hatsune Miku", "Unlock Hatsune Miku");
-            game.achievements.new("Self made man", "have 10x Hatsune Miku");
-            game.achievements.new("Migu was here", "Have 50x Hatsune Miku");
-            game.achievements.new("WONDERLAND.COM", "Have 100x Hatsune Miku");
+            game.achievements.newTiered("Hatsune Miku", "", "Hatsune Miku", 0);
+            game.achievements.newTiered("Self made man", "", "Hatsune Miku", 1);
+            game.achievements.newTiered("Migu was here", "", "Hatsune Miku", 2);
 
             game.achievements.id = 3000;
 
-            game.achievements.new("Gumi", "Unlock Gumi");
-            game.achievements.new("I Feed", "have 10x Gumi");
-            game.achievements.new("In circles in circles", "Have 50x Gumi");
-            game.achievements.new("GETCHA", "Have 100x Gumi");
+            game.achievements.newTiered("Gumi", "", "Gumi", 0);
+            game.achievements.newTiered("I Feed", "", "Gumi", 1);
+            game.achievements.newTiered("In circles in circles", "", "Gumi", 2);
 
             game.achievements.id = 4000;
 
             // Need to write the names before i can use them for data
             //game.achievements.new("Mai", "Unlock Mai");
-            //game.achievements.new("Unwritten", "have 10x Mai");
             //game.achievements.new("Unwritten", "Have 50x Mai");
             //game.achievements.new("Unwritten", "Have 100x Mai");
 
             game.achievements.id = 5000;
 
-            //game.achievements.new("Unwritten", "Unlock Kagamine Rin");
-            //game.achievements.new("Unwritten", "have 10x Kagamine Rin");
+            //game.achievements.new("Kagamine Rin", "Unlock Kagamine Rin");
             //game.achievements.new("Unwritten", "Have 50x Kagamine Rin");
             //game.achievements.new("Unwritten", "Have 100x Kagamine Rin");
         };
@@ -541,19 +576,16 @@ I probaly have to revisit old functions to revise as this is my first project th
 
                 // idk how efficient this is but ill roll with it for now
                 if (new Function("return " + 'game.data.upgrades.kasane_teto.amount>0')()) game.achievements.award("Kasane Teto");
-                if (new Function("return " + 'game.data.upgrades.kasane_teto.amount>9')()) game.achievements.award("Baguette lover");
-                if (new Function("return " + 'game.data.upgrades.kasane_teto.amount>49')()) game.achievements.award("Baguette bakery");
+                if (new Function("return " + 'game.data.upgrades.kasane_teto.amount>49')()) game.achievements.award("Baguette lover");
                 if (new Function("return " + 'game.data.upgrades.kasane_teto.amount>99')()) game.achievements.award("Teto teretory");
 
                 if (new Function("return " + 'game.data.upgrades.hatsune_miku.amount>0')()) game.achievements.award("Hatsune Miku");
-                if (new Function("return " + 'game.data.upgrades.hatsune_miku.amount>9')()) game.achievements.award("Self made man");
-                if (new Function("return " + 'game.data.upgrades.hatsune_miku.amount>49')()) game.achievements.award("Migu was here");
-                if (new Function("return " + 'game.data.upgrades.hatsune_miku.amount>99')()) game.achievements.award("WONDERLAND.COM");
+                if (new Function("return " + 'game.data.upgrades.hatsune_miku.amount>49')()) game.achievements.award("Self made man");
+                if (new Function("return " + 'game.data.upgrades.hatsune_miku.amount>99')()) game.achievements.award("Migu was here");
 
                 if (new Function("return " + 'game.data.upgrades.gumi.amount>0')()) game.achievements.award("Gumi");
-                if (new Function("return " + 'game.data.upgrades.gumi.amount>9')()) game.achievements.award("I Feed");
-                if (new Function("return " + 'game.data.upgrades.gumi.amount>49')()) game.achievements.award("In circles in circles");
-                if (new Function("return " + 'game.data.upgrades.gumi.amount>99')()) game.achievements.award("GETCHA");
+                if (new Function("return " + 'game.data.upgrades.gumi.amount>49')()) game.achievements.award("I Feed");
+                if (new Function("return " + 'game.data.upgrades.gumi.amount>99')()) game.achievements.award("In circles in circles");
             },
 
             changeBulk: (amount) => {
@@ -600,22 +632,6 @@ I probaly have to revisit old functions to revise as this is my first project th
                 if (new Function("return " + "game.data.songs>999")()) game.achievements.award("Song production");
                 if (new Function("return " + "game.data.songs>1336")()) game.achievements.award("VIP");
                 if (new Function("return " + "game.data.songs>999999")()) game.achievements.award("Golden");
-
-                for (me in game.data.achievements) {
-                    var b = new Function("return " + me.req);
-                    if (b() && !me.gotten) {
-                        me.gotten = true;
-                        document.querySelector("#achievements").innerHTML += `<br>
-                            <div class="achievement">
-                                <div class="title"; style="height: 70%;" id="points_current">
-                                    ${me.text}
-                                </div>
-                                <div class="small title" style="height: 30%;" id="points_per_second">
-                                    ${me.desc}
-                                </div>
-                            </div>`
-                    };
-                };
 
                 for (const [key, value] of Object.entries(game.delays)) {
                     value.delay++;
