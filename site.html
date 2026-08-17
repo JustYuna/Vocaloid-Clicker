@@ -35,7 +35,9 @@ I probaly have to revisit old functions to revise as this is my first project th
         };
 
 
-        function escapeRegExp(str){return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");}
+        function escapeRegExp(str){return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");};
+        // https://stackoverflow.com/questions/1704246/escape-a-white-space-character-using-javascript
+        function escapeSpace(str){return str.replace(/([ /])/g, '\\$1')};
 
 
         var game = {};
@@ -163,6 +165,7 @@ I probaly have to revisit old functions to revise as this is my first project th
         // Notifications
         // • • • • • • • • • • • • • • • •
 
+        // the great cookie man said note so i am continuing this name scheeme aswell but rewrite basically how it works instead of straight copying it
         game.note = {
             notes: [],
             notesById: [],
@@ -193,7 +196,7 @@ I probaly have to revisit old functions to revise as this is my first project th
                 {
                     if (!me.added) {
                         me.added = true;
-                        var str = `<div id=${me.id}><div class="note"><div class="title"; style="height: 70%;">${me.title}</div><div class="small title"; style="height: 30%;">${me.title}</div></div><br></div>`;
+                        var str = `<div id=${me.id}><div class="note"><div class="title"; style="height: 70%;">${me.title}</div><div class="small title"; style="height: 30%;">${me.desc}</div></div><br></div>`;
                         document.querySelector("#notes").innerHTML += str;
                     };
 
@@ -237,7 +240,7 @@ I probaly have to revisit old functions to revise as this is my first project th
                     };
 
                     var price = game.helper.math.calculateUpgradeCost(data.cost, data.amount, game.tempData.purchaseAmount);
-                    var canAfford = game.data.music >= price;
+                    var canAfford = game.data.songs >= price;
 
                     var amountMatch = cached.amount == data.amount;
                     var costMatch = cached.cost == price;
@@ -262,7 +265,7 @@ I probaly have to revisit old functions to revise as this is my first project th
                     var cost = game.helper.format.abbreviate(price);
                     var income = game.helper.format.abbreviate(data.income);
 
-                    if (game.data.totalMusic < data.cost) {
+                    if (game.data.totalSongs < data.cost) {
                         document.querySelector("#upgrades").innerHTML += `<br><div>
                                 <button class="upgrade locked">??? • Cost: ${cost}<br>???/s • ???</button>
                             </div>`;
@@ -275,11 +278,11 @@ I probaly have to revisit old functions to revise as this is my first project th
             },
 
             pointHeader: () => {
-                var music = game.helper.format.abbreviate(Math.round(game.data.music));
+                var songs = game.helper.format.abbreviate(Math.round(game.data.songs));
 
-                if (game.tempData.lastNoteTitle != music) {
-                    game.tempData.lastNoteTitle = music;
-                    document.querySelector("#points_current").innerHTML = music + " Music notes";
+                if (game.tempData.lastNoteTitle != songs) {
+                    game.tempData.lastNoteTitle = songs;
+                    document.querySelector("#points_current").innerHTML = songs + " Songs";
                 };
 
                 var perSecond = game.helper.format.abbreviate(Math.round(game.data.income));
@@ -288,7 +291,7 @@ I probaly have to revisit old functions to revise as this is my first project th
                     game.tempData.lastNotePerSecond = perSecond;
                     document.querySelector("#points_per_second").innerHTML = "~ " + perSecond + " per second ~";
                 };
-                document.title = music + " notes - Volcaloid Clicker";
+                document.title = songs + " notes - Volcaloid Clicker";
             },
 
             all: () => {
@@ -334,8 +337,8 @@ I probaly have to revisit old functions to revise as this is my first project th
             lastNotePerSecond: ""
         };
         game.data = {
-            music: 0,
-            totalMusic: 0,
+            songs: 0,
+            totalSongs: 0,
             income: 0,
             upgrades: {
                 kasane_teto: {
@@ -344,7 +347,7 @@ I probaly have to revisit old functions to revise as this is my first project th
                     income: 1,
                     unlocked: false,
                     name: "Kasane Teto",
-                    desc: "Eats baguettes and generates music."
+                    desc: "Eats baguettes and generates songs."
                 },
                 hatsune_miku: {
                     amount: 0,
@@ -447,67 +450,76 @@ I probaly have to revisit old functions to revise as this is my first project th
                     desc: "Perfection!"
                 }
             },
-            achievements: [
-                { req: "game.data.totalPoints>0", gotten: false, text: "First note", desc: "Earn your first music note" },
-                { req: "game.data.totalPoints>99", gotten: false, text: "Note factory", desc: "Earn your first 100 music notes" },
-                { req: "game.data.totalPoints>999", gotten: false, text: "Note production", desc: "Earn your first 1.000 music notes" },
-                { req: "game.data.totalPoints>999999999", gotten: false, text: "A million notes and no money", desc: "Earn your first 1.000.000 music notes" },
+            achievements: {}
+        };
 
-                { req: "game.data.upgrades.KasaneTeto.amount>0", gotten: false, text: "Kasane Teto", desc: "Have 1x Kasane Teto" },
-                { req: "game.data.upgrades.KasaneTeto.amount>9", gotten: false, text: "Should go buy some more baguettes", desc: "Have 10x Kasane Teto" },
-                { req: "game.data.upgrades.KasaneTeto.amount>49", gotten: false, text: "Useless baguette lover", desc: "Have 50 Kasane Teto" },
-                { req: "game.data.upgrades.KasaneTeto.amount>99", gotten: false, text: "Teto teretory", desc: "Have 100 Kasane Teto" },
+        // • • • • • • • • • • • • • • • •
+        // Add achievements to data
+        // • • • • • • • • • • • • • • • •
 
-                { req: "game.data.upgrades.HatsuneMiku.amount>0", gotten: false, text: "Hatsune Miku!", desc: "Have 1x Hatsune Miku" },
-                { req: "game.data.upgrades.HatsuneMiku.amount>9", gotten: false, text: "So many songs", desc: "Have 10x Hatsune Miku" },
-                { req: "game.data.upgrades.HatsuneMiku.amount>49", gotten: false, text: "Migu would disaproove", desc: "Have 50x Hatsune Miku" },
-                { req: "game.data.upgrades.HatsuneMiku.amount>99", gotten: false, text: "Miku x100", desc: "Have 100x Hatsune Miku" },
+        game.achievements = {
+            id: 0,
+            // this useless function will mainly be used for startup exclusivly to add em achievements
+            new: function(name, desc) {
+                var me = {};
+                me.id = game.achievements.id;
+                me.name = name;
+                me.desc = desc;
+                me.earned = false;
+                game.achievements.id++;
 
-                { req: "game.data.upgrades.Gumi.amount>0", gotten: false, text: "Gumi!", desc: "Have 1x Gumi" },
-                { req: "game.data.upgrades.Gumi.amount>9", gotten: false, text: "Gumi x10", desc: "Have 10x Gumi" },
-                { req: "game.data.upgrades.Gumi.amount>49", gotten: false, text: "Gumi x50", desc: "Have 50x Gumi" },
-                { req: "game.data.upgrades.Gumi.amount>99", gotten: false, text: "Gumi x100", desc: "Have 100x Gumi" },
+                game.data.achievements[escapeSpace(name)] = me;
+            },
+            award: function(name) {
+                if (game.data.achievements[escapeSpace(name)]?.earned) return;
 
-                { req: "game.data.upgrades.Mai.amount>0", gotten: false, text: "Mai!", desc: "Have 1x Mai" },
-                { req: "game.data.upgrades.Mai.amount>9", gotten: false, text: "Mai x10", desc: "Have 10x Mai" },
-                { req: "game.data.upgrades.Mai.amount>49", gotten: false, text: "Miku x50", desc: "Have 50x Mai" },
-                { req: "game.data.upgrades.Mai.amount>99", gotten: false, text: "Miku x100", desc: "Have 100x Mai" },
+                game.note.new("~ Achievement Unlocked ~", name, "", 120);
+                game.data.achievements[escapeSpace(name)].earned = true;
+            }
+        };
 
-                { req: "game.data.upgrades.KagamineRin.amount>0", gotten: false, text: "KagamineRin!", desc: "Have 1x KagamineRin" },
-                { req: "game.data.upgrades.KagamineRin.amount>9", gotten: false, text: "KagamineRin x10", desc: "Have 10x KagamineRin" },
-                { req: "game.data.upgrades.KagamineRin.amount>49", gotten: false, text: "KagamineRin x50", desc: "Have 50x KagamineRin" },
-                { req: "game.data.upgrades.KagamineRin.amount>99", gotten: false, text: "KagamineRin x100", desc: "Have 100x KagamineRin" },
+        {
+            game.achievements.new("First song", "Earn your first song");
+            game.achievements.new("Small published", "Earn 100 song's");
+            game.achievements.new("Song production", "Earn 1.000 songs");
+            game.achievements.new("VIP", "Earn 1.337 songs");
+            game.achievements.new("Golden", "Earn 1.000.000 songs");
 
-                { req: "game.data.upgrades.KagamineLen.amount>0", gotten: false, text: "KagamineLen!", desc: "Have 1x KagamineLen" },
-                { req: "game.data.upgrades.KagamineLen.amount>9", gotten: false, text: "KagamineLen x10", desc: "Have 10x KagamineLen" },
-                { req: "game.data.upgrades.KagamineLen.amount>49", gotten: false, text: "KagamineLen x50", desc: "Have 50x KagamineLen" },
-                { req: "game.data.upgrades.KagamineLen.amount>99", gotten: false, text: "KagamineLen x100", desc: "Have 100x KagamineLen" },
+            game.achievements.id = 1000;
 
-                { req: "game.data.upgrades.AdachiRei.amount>0", gotten: false, text: "AdachiRei!", desc: "Have 1x AdachiRei" },
-                { req: "game.data.upgrades.AdachiRei.amount>9", gotten: false, text: "AdachiRei x10", desc: "Have 10x AdachiRei" },
-                { req: "game.data.upgrades.AdachiRei.amount>49", gotten: false, text: "AdachiRei x50", desc: "Have 50x AdachiRei" },
-                { req: "game.data.upgrades.AdachiRei.amount>99", gotten: false, text: "AdachiRei x100", desc: "Have 100x AdachiRei" },
+            game.achievements.new("Kasane Teto", "Unlock Kasane Teto");
+            game.achievements.new("Baguette lover", "have 10x Kasane Teto");
+            game.achievements.new("Baguette bakery", "Have 50x Kasane Teto");
+            game.achievements.new("Teto teretory", "Have 100x Kasane Teto");
 
-                { req: "game.data.upgrades.EleanorForte.amount>0", gotten: false, text: "EleanorForte!", desc: "Have 1x EleanorForte" },
-                { req: "game.data.upgrades.EleanorForte.amount>9", gotten: false, text: "EleanorForte x10", desc: "Have 10x EleanorForte" },
-                { req: "game.data.upgrades.EleanorForte.amount>49", gotten: false, text: "EleanorForte x50", desc: "Have 50x EleanorForte" },
-                { req: "game.data.upgrades.EleanorForte.amount>99", gotten: false, text: "EleanorForte x100", desc: "Have 100x EleanorForte" },
+            game.achievements.id = 2000;
 
-                { req: "game.data.upgrades.YiXi.amount>0", gotten: false, text: "YiXi!", desc: "Have 1x YiXi" },
-                { req: "game.data.upgrades.YiXi.amount>9", gotten: false, text: "YiXi x10", desc: "Have 10x YiXi" },
-                { req: "game.data.upgrades.YiXi.amount>49", gotten: false, text: "YiXi x50", desc: "Have 50x YiXi" },
-                { req: "game.data.upgrades.YiXi.amount>99", gotten: false, text: "YiXi x100", desc: "Have 100x YiXi" },
+            game.achievements.new("Hatsune Miku", "Unlock Hatsune Miku");
+            game.achievements.new("Self made man", "have 10x Hatsune Miku");
+            game.achievements.new("Migu was here", "Have 50x Hatsune Miku");
+            game.achievements.new("WONDERLAND.COM", "Have 100x Hatsune Miku");
 
-                { req: "game.data.upgrades.MagurineLuka.amount>0", gotten: false, text: "MagurineLuka!", desc: "Have 1x MagurineLuka" },
-                { req: "game.data.upgrades.MagurineLuka.amount>9", gotten: false, text: "MagurineLuka x10", desc: "Have 10x MagurineLuka" },
-                { req: "game.data.upgrades.MagurineLuka.amount>49", gotten: false, text: "MagurineLuka x50", desc: "Have 50x MagurineLuka" },
-                { req: "game.data.upgrades.MagurineLuka.amount>99", gotten: false, text: "MagurineLuka x100", desc: "Have 100x MagurineLuka" },
+            game.achievements.id = 3000;
 
-                { req: "game.data.upgrades.HakaineMaiko.amount>0", gotten: false, text: "HakaineMaiko!", desc: "Have 1x HakaineMaiko" },
-                { req: "game.data.upgrades.HakaineMaiko.amount>9", gotten: false, text: "HakaineMaiko x10", desc: "Have 10x HakaineMaiko" },
-                { req: "game.data.upgrades.HakaineMaiko.amount>49", gotten: false, text: "HakaineMaiko x50", desc: "Have 50x HakaineMaiko" },
-                { req: "game.data.upgrades.HakaineMaiko.amount>99", gotten: false, text: "HakaineMaiko x100", desc: "Have 100x HakaineMaiko" }
-            ]
+            game.achievements.new("Gumi", "Unlock Gumi");
+            game.achievements.new("I Feed", "have 10x Gumi");
+            game.achievements.new("In circles in circles", "Have 50x Gumi");
+            game.achievements.new("GETCHA", "Have 100x Gumi");
+
+            game.achievements.id = 4000;
+
+            // Need to write the names before i can use them for data
+            //game.achievements.new("Mai", "Unlock Mai");
+            //game.achievements.new("Unwritten", "have 10x Mai");
+            //game.achievements.new("Unwritten", "Have 50x Mai");
+            //game.achievements.new("Unwritten", "Have 100x Mai");
+
+            game.achievements.id = 5000;
+
+            //game.achievements.new("Unwritten", "Unlock Kagamine Rin");
+            //game.achievements.new("Unwritten", "have 10x Kagamine Rin");
+            //game.achievements.new("Unwritten", "Have 50x Kagamine Rin");
+            //game.achievements.new("Unwritten", "Have 100x Kagamine Rin");
         };
 
         game.clickFunctions = {
@@ -520,12 +532,28 @@ I probaly have to revisit old functions to revise as this is my first project th
                 };
 
                 var price = game.helper.math.calculateUpgradeCost(data.cost, data.amount, game.tempData.purchaseAmount);
-                if (game.data.music < price) return;
+                if (game.data.songs < price) return;
 
-                game.data.music -= price;
+                game.data.songs -= price;
                 data.amount += game.tempData.purchaseAmount;
                 game.sync.income();
                 game.sync.upgradeList();
+
+                // idk how efficient this is but ill roll with it for now
+                if (new Function("return " + 'game.data.upgrades.kasane_teto.amount>0')()) game.achievements.award("Kasane Teto");
+                if (new Function("return " + 'game.data.upgrades.kasane_teto.amount>9')()) game.achievements.award("Baguette lover");
+                if (new Function("return " + 'game.data.upgrades.kasane_teto.amount>49')()) game.achievements.award("Baguette bakery");
+                if (new Function("return " + 'game.data.upgrades.kasane_teto.amount>99')()) game.achievements.award("Teto teretory");
+
+                if (new Function("return " + 'game.data.upgrades.hatsune_miku.amount>0')()) game.achievements.award("Hatsune Miku");
+                if (new Function("return " + 'game.data.upgrades.hatsune_miku.amount>9')()) game.achievements.award("Self made man");
+                if (new Function("return " + 'game.data.upgrades.hatsune_miku.amount>49')()) game.achievements.award("Migu was here");
+                if (new Function("return " + 'game.data.upgrades.hatsune_miku.amount>99')()) game.achievements.award("WONDERLAND.COM");
+
+                if (new Function("return " + 'game.data.upgrades.gumi.amount>0')()) game.achievements.award("Gumi");
+                if (new Function("return " + 'game.data.upgrades.gumi.amount>9')()) game.achievements.award("I Feed");
+                if (new Function("return " + 'game.data.upgrades.gumi.amount>49')()) game.achievements.award("In circles in circles");
+                if (new Function("return " + 'game.data.upgrades.gumi.amount>99')()) game.achievements.award("GETCHA");
             },
 
             changeBulk: (amount) => {
@@ -563,13 +591,18 @@ I probaly have to revisit old functions to revise as this is my first project th
             setInterval(() => {
                 if (!game.loaded) return false;
 
-                game.data.music += game.data.income / game.tick;
-                game.data.totalMusic += game.data.income / game.tick;
+                game.data.songs += game.data.income / game.tick;
+                game.data.totalSongs += game.data.income / game.tick;
                 game.sync.pointHeader();
+
+                if (new Function("return " + "game.data.songs>0")()) game.achievements.award("First song");
+                if (new Function("return " + "game.data.songs>99")()) game.achievements.award("Small published");
+                if (new Function("return " + "game.data.songs>999")()) game.achievements.award("Song production");
+                if (new Function("return " + "game.data.songs>1336")()) game.achievements.award("VIP");
+                if (new Function("return " + "game.data.songs>999999")()) game.achievements.award("Golden");
 
                 for (me in game.data.achievements) {
                     var b = new Function("return " + me.req);
-                    console.log(me);
                     if (b() && !me.gotten) {
                         me.gotten = true;
                         document.querySelector("#achievements").innerHTML += `<br>
@@ -639,7 +672,7 @@ I probaly have to revisit old functions to revise as this is my first project th
             </div>
             <div class="main buttonAnchor">
                 <button class="main button" ;
-                    onclick="game.data.music += 1; game.data.totalMusic += 1; game.sync.pointHeader();">
+                    onclick="game.data.songs += 1; game.data.totalSongs += 1; game.sync.pointHeader();">
                 </button>
             </div>
         </div>
