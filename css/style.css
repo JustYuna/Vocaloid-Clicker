@@ -128,7 +128,9 @@ div,span,h1,h2,h3,h4,h5,h6,p{
     box-shadow: 5px 5px 5px var(--color-box-shadow);
     border-radius: 100%;
     border-style: dashed;
-    border-color: rgb(125, 125, 125);
+    border-color: rgb(175, 175, 175);
+    background: url(../assets/img/MiguCircle.png);
+    background-size: cover;
 }
 
 .main.button:hover {
@@ -152,7 +154,7 @@ div,span,h1,h2,h3,h4,h5,h6,p{
     content: url('../assets/images/MiguCircle.png');
 }
 
-.achievements {
+.notes {
     width: 100%;
     height: 30%;
     left: 0px;
@@ -163,7 +165,7 @@ div,span,h1,h2,h3,h4,h5,h6,p{
     position: absolute;
 }
 
-.achievement {
+.note {
     width: 90%;
     background-color: rgb(250, 200, 250);
     padding: 1em;

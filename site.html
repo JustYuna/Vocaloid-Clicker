@@ -91,7 +91,7 @@ I probaly have to revisit old functions to revise as this is my first project th
         };
 
         // • • • • • • • • • • • • • • • •
-        // Sync Helper
+        // Storage Helper
         // • • • • • • • • • • • • • • • •
 
         game.storage = {
@@ -118,6 +118,7 @@ I probaly have to revisit old functions to revise as this is my first project th
                     } catch (expection) {};
 
                     console.log("Game saved");
+                    game.note.new("Game saved", "", "", 4);
                 }
             },
 
@@ -149,8 +150,62 @@ I probaly have to revisit old functions to revise as this is my first project th
 				str=b64_to_utf8(str);
 
                 return str;
+            },
+
+            reset: function() {
+                window.localStorage.clear();
+                location.reload();
+                // lazy ah aproach
             }
         }
+
+        // • • • • • • • • • • • • • • • •
+        // Notifications
+        // • • • • • • • • • • • • • • • •
+
+        game.note = {
+            notes: [],
+            notesById: [],
+            idCounter: 0,
+            new: function(title, desc, icon, lifeCycles) {
+                this.title = title;
+                this.desc = desc;
+                this.icon = icon | "";
+                this.life = lifeCycles * game.tick; // 1 cycle = 1 second cause why not
+                this.id = "note-" + game.note.idCounter;
+                this.added = false;
+                game.note.idCounter++;
+
+                game.note.notes[toString(this.id)] = this;
+            },
+
+            remove: function(id) {
+                if (game.notes[id]) game.notes[id].life = 0;
+            },
+
+            removeAll: function() {
+                game.note.notes = {};
+                document.querySelector("#notes").innerHTML = "";
+            },
+
+            logic: function() {
+                for (var [_, me] of Object.entries(game.note.notes))
+                {
+                    if (!me.added) {
+                        me.added = true;
+                        var str = `<div id=${me.id}><div class="note"><div class="title"; style="height: 70%;">${me.title}</div><div class="small title"; style="height: 30%;">${me.title}</div></div><br></div>`;
+                        document.querySelector("#notes").innerHTML += str;
+                    };
+
+                    me.life--;
+                    if (me.life < 1) {
+                        delete game.note.notes[me.id];
+                        const element = document.querySelector("#" + me.id)?.remove();
+                    };
+                };
+            }
+        };
+
 
         // • • • • • • • • • • • • • • • •
         // Sync Helper
@@ -392,7 +447,7 @@ I probaly have to revisit old functions to revise as this is my first project th
                     desc: "Perfection!"
                 }
             },
-            achievement: [
+            achievements: [
                 { req: "game.data.totalPoints>0", gotten: false, text: "First note", desc: "Earn your first music note" },
                 { req: "game.data.totalPoints>99", gotten: false, text: "Note factory", desc: "Earn your first 100 music notes" },
                 { req: "game.data.totalPoints>999", gotten: false, text: "Note production", desc: "Earn your first 1.000 music notes" },
@@ -481,7 +536,7 @@ I probaly have to revisit old functions to revise as this is my first project th
                 document.querySelector(`#bulkButton${game.tempData.purchaseAmount}`).className = "bulkButton";
 
                 game.tempData.purchaseAmount = amount;
-                sync.upgradeList(true);
+                game.sync.upgradeList(true);
             }
         };
 
@@ -512,18 +567,18 @@ I probaly have to revisit old functions to revise as this is my first project th
                 game.data.totalMusic += game.data.income / game.tick;
                 game.sync.pointHeader();
 
-                for (i in game.data.achievements) {
-                    var achievement = game.data.achievements[i];
-                    var b = new Function("return " + achievement.req);
-                    if (b() && !achievement.gotten) {
-                        game.data.achievements[i].gotten = true;
+                for (me in game.data.achievements) {
+                    var b = new Function("return " + me.req);
+                    console.log(me);
+                    if (b() && !me.gotten) {
+                        me.gotten = true;
                         document.querySelector("#achievements").innerHTML += `<br>
                             <div class="achievement">
                                 <div class="title"; style="height: 70%;" id="points_current">
-                                    ${achievement.text}
+                                    ${me.text}
                                 </div>
                                 <div class="small title" style="height: 30%;" id="points_per_second">
-                                    ${achievement.desc}
+                                    ${me.desc}
                                 </div>
                             </div>`
                     };
@@ -537,6 +592,8 @@ I probaly have to revisit old functions to revise as this is my first project th
                     };
                 };
 
+                game.note.logic();
+
             }, 1000/game.tick)
         };
 
@@ -549,12 +606,6 @@ I probaly have to revisit old functions to revise as this is my first project th
                 for (i in game.data.upgrades) {
                     if (cookies.upgrades[i] == null) {
                         cookies.upgrades[i] = game.data.upgrades[i];
-                    };
-                };
-
-                for (i in game.data.achievements) {
-                    if (cookies.achievements[i] == null || game.data.achievements[i].text != game.data.achievements[i].text) {
-                        cookies.achievements[i] = game.data.achievements[i];
                     };
                 };
 
@@ -574,6 +625,7 @@ I probaly have to revisit old functions to revise as this is my first project th
         <a href="https://discord.gg/rPAMv59wPM">Volcalhaven</a>
         <a href="https://discord.gg/sPQFM9Rj33">Yuna Codes</a>
         <button onclick="game.storage.save()">Save game</button>
+        <button onclick="game.storage.reset()">Reset game</button>
     </div>
     <div>
         <div class="section left">
@@ -588,12 +640,11 @@ I probaly have to revisit old functions to revise as this is my first project th
             <div class="main buttonAnchor">
                 <button class="main button" ;
                     onclick="game.data.music += 1; game.data.totalMusic += 1; game.sync.pointHeader();">
-                    <img src="./assets/img/MiguCircle.png" ; style="width: 100%;">
                 </button>
             </div>
         </div>
         <div class="section middle">
-            <div id="achievements" ; class="achievements"></div>
+            <div id="notes" ; class="notes"></div>
         </div>
         <div class="section right">
             <div>
