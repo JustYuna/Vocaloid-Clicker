@@ -31,6 +31,11 @@ button, p, h1, h2, h3 {
     color: var(--color-text)
 }
 
+div,span,h1,h2,h3,h4,h5,h6,p{
+    margin:0;
+    padding:0;
+}
+
 .topbar {
     width: 100%;
     height: 5%;
@@ -47,10 +52,26 @@ button, p, h1, h2, h3 {
   text-decoration: none;
   font-size: 17px;
   color: var(--color-text-bright);
+  background-color: transparent;
+  border: transparent;
 }
 
+.topbar button {
+  float: left;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  color: var(--color-text-bright);
+  background-color: transparent;
+  border: transparent;
+}
 
 .topbar a:hover {
+    color: var(--color-secondary);
+    text-shadow: 0px 0px 5px var(--color-secondary);
+}
+.topbar button:hover {
     color: var(--color-secondary);
     text-shadow: 0px 0px 5px var(--color-secondary);
 }
@@ -69,11 +90,13 @@ button, p, h1, h2, h3 {
     top: 7.5%;
     left: 0%;
     width: 100%;
+    padding-top: 1%;
+    padding-bottom: 1%;
     background: linear-gradient(90deg, var(--color-main) 0%, var(--color-darker-main) 50%, var(--color-main) 100%);
 }
 
 .section.middle {
-    left: 25%;
+    left: 33.5%;
     top: 7.5%;
     bottom: 0%;
     width: 33%;
@@ -102,8 +125,25 @@ button, p, h1, h2, h3 {
     left: -128px;
     top: -128px;
     position: absolute;
-    border-radius: 100%;
     box-shadow: 5px 5px 5px var(--color-box-shadow);
+    border-radius: 100%;
+    border-style: dashed;
+    border-color: rgb(125, 125, 125);
+}
+
+.main.button:hover {
+    width: 266px;
+    height: 266px;
+    left: -133px;
+    top: -133px;
+}
+
+.main.button:active {
+    width: 246px;
+    height: 246px;
+    left: -123px;
+    top: -123px;
+
 }
 
 .main.buttonImage {
@@ -115,18 +155,34 @@ button, p, h1, h2, h3 {
 .achievements {
     width: 100%;
     height: 30%;
-    left: 50%;
+    left: 0px;
+    top: 70%;
     overflow-y: scroll;
     scrollbar-color: var(--color-darkest-main) transparent;
     scrollbar-width: thin;
+    position: absolute;
 }
 
-.upgrade.amount {
-    width: 95%;
+.achievement {
+    width: 90%;
+    background-color: rgb(250, 200, 250);
+    padding: 1em;
+    box-shadow: 5px 5px 5px var(--color-box-shadow);
+    border-radius: 15px;
+    border-style: dashed;
+    border-color: rgb(150, 100, 150);
+}
+
+.bulkButtons {
+    width: 87%;
     height: 3%;
     display: grid;
     grid-template-columns: 33% 33% 33%;
     overflow: hidden;
+    border-radius: 1ch;
+    border-style: dashed;
+    border-color: rgb(150, 100, 150);
+    background-color: rgb(250, 200, 250);
 }
 
 .bulkButton {
@@ -151,13 +207,13 @@ button, p, h1, h2, h3 {
     border-left-width: 0px;
 
     font-size: large;
-    color: var(--color-secondary);
-    text-shadow: 0px 0px 3px var(--color-secondary);
+    color: rgb(100, 115, 175);
+    text-shadow: 0px 0px 2px rgb(100, 115, 175);
 }
 
 .bulkButton:hover {
-    color: var(--color-secondary);
-    text-shadow: 0px 0px 3px var(--color-secondary);
+    color: rgb(100, 115, 175);
+    text-shadow: 0px 0px 2px rgb(100, 115, 175);
 }
 
 .upgrade.list {
@@ -170,21 +226,23 @@ button, p, h1, h2, h3 {
 }
 
 .upgrade.locked {
-    width: 95%;
-    background-color: var(--color-secondary);
-    border-width: 0%;
-    border-radius: 5px;
+    width: 90%;
+    background-color: rgb(150, 200, 150);
     padding: 1em;
     box-shadow: 5px 5px 5px var(--color-box-shadow);
+    border-radius: 15px;
+    border-style: dashed;
+    border-color: rgb(50, 100, 50);
 }
 
 .upgrade.unlocked {
-    width: 95%;
-    background-color: var(--color-darker-secondary);
-    border-width: 0%;
-    border-radius: 5px;
+    width: 90%;
+    background-color: rgb(200, 250, 200);
     padding: 1em;
     box-shadow: 5px 5px 5px var(--color-box-shadow);
+    border-radius: 15px;
+    border-style: dashed;
+    border-color: rgb(100, 150, 100);
 }
 
 .title {

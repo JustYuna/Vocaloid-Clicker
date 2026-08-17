@@ -1,0 +1,612 @@
+<!-- • • • • • • • • • • • • • • • •
+Copyright (C) 2026 Yuna2077 - All rights Reserved
+You may use, distribute or modify this code under the terms of AGPLv3 license.
+    License: https://choosealicense.com/licenses/agpl-3.0/
+
+This game is heavely inspired by cookie clicker.
+I probaly have to revisit old functions to revise as this is my first project that includes the making of a "website game", i dont think that i will ever make localization happen tho...
+ • • • • • • • • • • • • • • • • -->
+
+<!doctype html>
+
+<!-- SITE -->
+<html>
+
+<head>
+    <title>Generic Clicker</title>
+    <link href="./css/style.css" , rel="stylesheet">
+
+    <script>
+        // https://stackoverflow.com/questions/30106476/using-javascripts-atob-to-decode-base64-doesnt-properly-decode-utf-8-strings
+        function utf8_to_b64(str) {
+            try{return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+                return String.fromCharCode(parseInt(p1, 16))
+            }));}
+            catch(err)
+            {return '';}
+        };
+
+        function b64_to_utf8(str) {
+            try{return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+            }).join(''));}
+            catch(err)
+            {return '';}
+        };
+
+
+        function escapeRegExp(str){return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");}
+
+
+        var game = {};
+
+        game.saveTo = "VolcaloidClickerGame";
+        game.cache = {};
+
+        // • • • • • • • • • • • • • • • •
+        // Helper Functions
+        // • • • • • • • • • • • • • • • •
+
+        game.helper = {};
+        game.helper.format = {
+            /**
+             * Abbreviates a number example 1234 -> 1.23K
+             * 
+             * @param {input} number - The number to format
+             * @returns {string} Formatted number (e.g., "1,23K")
+             */
+            abbreviate: (input) => {
+                if (input < 1000) return input.toString();
+
+                const suffixes = ["", "K", "M", "B", "T", "Qa", "Qi"];
+                const suffixNum = Math.floor((String(Math.floor(input)).length - 1) / 3);
+
+                const scaled = input / Math.pow(1000, suffixNum);
+
+                let formatted = scaled.toPrecision(3);
+
+                formatted = parseFloat(formatted).toString();
+
+                return formatted + suffixes[suffixNum];
+            }
+        };
+        game.helper.math = {
+            /**
+             * Returns the price of given data via upgrade formula
+             * 
+             * @param {basePrice} number - Base price of item
+             * @param {owns} number - How much the user owns
+             * @param {amount} number - How many are being attempted to purchase
+             * @return {number} - Calculated price 
+             */
+            calculateUpgradeCost: (basePrice, owns, amount) => {
+                var price = 0;
+                do {
+                    price += basePrice * Math.pow(1.2, owns);
+                    amount--;
+                    owns++;
+                } while (amount > 0);
+                return Math.round(price)
+            },
+        };
+
+        // • • • • • • • • • • • • • • • •
+        // Sync Helper
+        // • • • • • • • • • • • • • • • •
+
+        game.storage = {
+            save: function() {
+                /*
+                var data = JSON.stringify(game.data);
+                var date = new Date();
+                date.setTime(date.getDate() + (3640 * 24 * 60 * 60 * 1000));
+                var expires = "; expires=" + date.toUTCString();
+                document.cookie = "cookie=" + data + expires;
+                console.log("Data saved\n" + "cookie=" + data + expires)
+                */ // cookies truly suck to use...
+
+                var str = JSON.stringify(game.data);
+                str=utf8_to_b64(str)+'!END!';
+				if (str.length < 10) {
+                    console.warn("Saving failed")
+                }
+                else {
+                    str = escape(str);
+
+                    try {
+                        local=window.localStorage.setItem(game.saveTo,str);
+                    } catch (expection) {};
+
+                    console.log("Game saved");
+                }
+            },
+
+            getRaw: function() {
+                var local = 0;
+
+                try {
+                    local=window.localStorage.getItem(game.saveTo)
+                } catch (expection) {};
+
+                console.log(local);
+                return local;
+            },
+
+            get: function() {
+                var str = "";
+                var local = 0;
+
+                try {
+                    local=window.localStorage.getItem(game.saveTo)
+                } catch (expection) {};
+
+                if (!local) return; // no save
+
+                str = unescape(local);
+                if (str == "") return; // still no save >:v
+
+				str=str.split('!END!')[0];
+				str=b64_to_utf8(str);
+
+                return str;
+            }
+        }
+
+        // • • • • • • • • • • • • • • • •
+        // Sync Helper
+        // • • • • • • • • • • • • • • • •
+
+        game.sync = {
+            income: () => {
+                var income = 0;
+
+                for (i in game.data.upgrades) {
+                    var data = game.data.upgrades[i];
+                    var reward = (data.amount * data.income);
+                    income += reward;
+                };
+
+                game.data.income = income;
+            },
+
+            upgradeList: (force) => {
+                if (!game.cache.upgradeList) game.cache.upgradeList = {};
+
+                var needsReset = force | false;
+                for (i in game.data.upgrades) {
+                    var data = game.data.upgrades[i];
+                    var cached = game.cache.upgradeList[data.name];
+                    if (!cached) {
+                        game.cache.upgradeList[data.name] = { amount: 0, couldAfford: false, cost: 0 };
+                        cached = game.cache.upgradeList[data.name];
+                    };
+
+                    var price = game.helper.math.calculateUpgradeCost(data.cost, data.amount, game.tempData.purchaseAmount);
+                    var canAfford = game.data.music >= price;
+
+                    var amountMatch = cached.amount == data.amount;
+                    var costMatch = cached.cost == price;
+                    var affordMatch = cached.couldAfford == canAfford;
+
+                    if (!amountMatch | !costMatch | !affordMatch) {
+                        needsReset = true;
+                        game.cache.upgradeList[data.name] = { amount: data.amount, couldAfford: canAfford, cost: price };
+                    };
+                };
+
+                if (!needsReset) return;
+                document.querySelector("#upgrades").innerHTML = "";
+
+                for (i in game.data.upgrades) {
+                    var data = game.data.upgrades[i];
+                    var text = "Could not fetch";
+                    var cached = game.cache.upgradeList[data.name];
+                    if (!cached) continue;
+
+                    var price = cached.cost;
+                    var cost = game.helper.format.abbreviate(price);
+                    var income = game.helper.format.abbreviate(data.income);
+
+                    if (game.data.totalMusic < data.cost) {
+                        document.querySelector("#upgrades").innerHTML += `<br><div>
+                                <button class="upgrade locked">??? • Cost: ${cost}<br>???/s • ???</button>
+                            </div>`;
+                    } else {
+                        document.querySelector("#upgrades").innerHTML += `<br><div>
+                            <button class="upgrade unlocked"; onclick="game.onClicked('buy_upgrade', '${i}')">${data.name} • Cost: ${cost}<br>${income}/s • ${data.desc}</button>
+                            </div>`;
+                    };
+                };
+            },
+
+            pointHeader: () => {
+                var music = game.helper.format.abbreviate(Math.round(game.data.music));
+
+                if (game.tempData.lastNoteTitle != music) {
+                    game.tempData.lastNoteTitle = music;
+                    document.querySelector("#points_current").innerHTML = music + " Music notes";
+                };
+
+                var perSecond = game.helper.format.abbreviate(Math.round(game.data.income));
+
+                if (game.tempData.lastNotePerSecond != perSecond) {
+                    game.tempData.lastNotePerSecond = perSecond;
+                    document.querySelector("#points_per_second").innerHTML = "~ " + perSecond + " per second ~";
+                };
+                document.title = music + " notes - Volcaloid Clicker";
+            },
+
+            all: () => {
+                for (const [key, value] of Object.entries(game.sync)) {
+                    if (key != "all") {
+                        value();
+                    };
+                };
+            }
+        };
+
+        // • • • • • • • • • • • • • • • •
+        // Main settings
+        // • • • • • • • • • • • • • • • •
+
+        game.tick = 5;
+        game.delays = {
+            save: {
+                delay: 0,
+                interval: 60 * 5,
+                perform: () => {
+                    game.storage.save();
+                    console.log("Saved cookies")
+                }
+            },
+            guiSync: {
+                delay: 0,
+                interval: 1 * 5,
+                perform: () => {
+                    game.sync.upgradeList();
+                }
+            }
+        };
+        game.loaded = false;
+
+        // • • • • • • • • • • • • • • • •
+        // Data
+        // • • • • • • • • • • • • • • • •
+
+        game.tempData = {
+            purchaseAmount: 1,
+            lastNoteTitle: "",
+            lastNotePerSecond: ""
+        };
+        game.data = {
+            music: 0,
+            totalMusic: 0,
+            income: 0,
+            upgrades: {
+                kasane_teto: {
+                    amount: 0,
+                    cost: 10,
+                    income: 1,
+                    unlocked: false,
+                    name: "Kasane Teto",
+                    desc: "Eats baguettes and generates music."
+                },
+                hatsune_miku: {
+                    amount: 0,
+                    cost: 100,
+                    income: 2,
+
+                    unlocked: false,
+
+                    name: "Hatsune Miku",
+                    desc: "Migu is cuter anyways..."
+                },
+                gumi: {
+                    amount: 0,
+                    cost: 1_250,
+                    income: 8,
+
+                    unlocked: false,
+
+                    name: "Gumi",
+                    desc: "In circles in circles we go"
+                },
+                mai: {
+                    amount: 0,
+                    cost: 13_500,
+                    income: 50,
+
+                    unlocked: false,
+
+                    name: "Mai",
+                    desc: "She is on holidays"
+                },
+                kagamine_rin: {
+                    amount: 0,
+                    cost: 145_000,
+                    income: 125,
+
+                    unlocked: false,
+
+                    name: "Kagamine Rin",
+                    desc: "Just like Kagamine Len"
+                },
+                kagamine_len: {
+                    amount: 0,
+                    cost: 1.5e6,
+                    income: 1_250,
+
+                    unlocked: false,
+
+                    name: "Kagamine Len",
+                    desc: "Just like Kagamine Rin"
+                },
+                adachi_rei: {
+                    amount: 0,
+                    cost: 7.5e6,
+                    income: 3_000,
+
+                    unlocked: false,
+
+                    name: "Adachi Rei",
+                    desc: "This heat is pretty abnormal"
+                },
+                eleanor_forte: {
+                    amount: 0,
+                    cost: 25e6,
+                    income: 8_500,
+
+                    unlocked: false,
+
+                    name: "Eleanor Forte",
+                    desc: "They said it looked like rain"
+                },
+                yi_xi: {
+                    amount: 0,
+                    cost: 100e6,
+                    income: 25_000,
+
+                    unlocked: false,
+
+                    name: "Xi Yi",
+                    desc: "Animal cannibal"
+                },
+                magurine_luka: {
+                    amount: 0,
+                    cost: 650e6,
+                    income: 75_000,
+
+                    unlocked: false,
+
+                    name: "Magurine Luka",
+                    desc: "The fish will never be forgotten..."
+                },
+                hakaine_maiko: {
+                    amount: 0,
+                    cost: 2.5e9,
+                    income: 250_000,
+
+                    unlocked: false,
+
+                    name: "Hakaine Maiko",
+                    desc: "Perfection!"
+                }
+            },
+            achievement: [
+                { req: "game.data.totalPoints>0", gotten: false, text: "First note", desc: "Earn your first music note" },
+                { req: "game.data.totalPoints>99", gotten: false, text: "Note factory", desc: "Earn your first 100 music notes" },
+                { req: "game.data.totalPoints>999", gotten: false, text: "Note production", desc: "Earn your first 1.000 music notes" },
+                { req: "game.data.totalPoints>999999999", gotten: false, text: "A million notes and no money", desc: "Earn your first 1.000.000 music notes" },
+
+                { req: "game.data.upgrades.KasaneTeto.amount>0", gotten: false, text: "Kasane Teto", desc: "Have 1x Kasane Teto" },
+                { req: "game.data.upgrades.KasaneTeto.amount>9", gotten: false, text: "Should go buy some more baguettes", desc: "Have 10x Kasane Teto" },
+                { req: "game.data.upgrades.KasaneTeto.amount>49", gotten: false, text: "Useless baguette lover", desc: "Have 50 Kasane Teto" },
+                { req: "game.data.upgrades.KasaneTeto.amount>99", gotten: false, text: "Teto teretory", desc: "Have 100 Kasane Teto" },
+
+                { req: "game.data.upgrades.HatsuneMiku.amount>0", gotten: false, text: "Hatsune Miku!", desc: "Have 1x Hatsune Miku" },
+                { req: "game.data.upgrades.HatsuneMiku.amount>9", gotten: false, text: "So many songs", desc: "Have 10x Hatsune Miku" },
+                { req: "game.data.upgrades.HatsuneMiku.amount>49", gotten: false, text: "Migu would disaproove", desc: "Have 50x Hatsune Miku" },
+                { req: "game.data.upgrades.HatsuneMiku.amount>99", gotten: false, text: "Miku x100", desc: "Have 100x Hatsune Miku" },
+
+                { req: "game.data.upgrades.Gumi.amount>0", gotten: false, text: "Gumi!", desc: "Have 1x Gumi" },
+                { req: "game.data.upgrades.Gumi.amount>9", gotten: false, text: "Gumi x10", desc: "Have 10x Gumi" },
+                { req: "game.data.upgrades.Gumi.amount>49", gotten: false, text: "Gumi x50", desc: "Have 50x Gumi" },
+                { req: "game.data.upgrades.Gumi.amount>99", gotten: false, text: "Gumi x100", desc: "Have 100x Gumi" },
+
+                { req: "game.data.upgrades.Mai.amount>0", gotten: false, text: "Mai!", desc: "Have 1x Mai" },
+                { req: "game.data.upgrades.Mai.amount>9", gotten: false, text: "Mai x10", desc: "Have 10x Mai" },
+                { req: "game.data.upgrades.Mai.amount>49", gotten: false, text: "Miku x50", desc: "Have 50x Mai" },
+                { req: "game.data.upgrades.Mai.amount>99", gotten: false, text: "Miku x100", desc: "Have 100x Mai" },
+
+                { req: "game.data.upgrades.KagamineRin.amount>0", gotten: false, text: "KagamineRin!", desc: "Have 1x KagamineRin" },
+                { req: "game.data.upgrades.KagamineRin.amount>9", gotten: false, text: "KagamineRin x10", desc: "Have 10x KagamineRin" },
+                { req: "game.data.upgrades.KagamineRin.amount>49", gotten: false, text: "KagamineRin x50", desc: "Have 50x KagamineRin" },
+                { req: "game.data.upgrades.KagamineRin.amount>99", gotten: false, text: "KagamineRin x100", desc: "Have 100x KagamineRin" },
+
+                { req: "game.data.upgrades.KagamineLen.amount>0", gotten: false, text: "KagamineLen!", desc: "Have 1x KagamineLen" },
+                { req: "game.data.upgrades.KagamineLen.amount>9", gotten: false, text: "KagamineLen x10", desc: "Have 10x KagamineLen" },
+                { req: "game.data.upgrades.KagamineLen.amount>49", gotten: false, text: "KagamineLen x50", desc: "Have 50x KagamineLen" },
+                { req: "game.data.upgrades.KagamineLen.amount>99", gotten: false, text: "KagamineLen x100", desc: "Have 100x KagamineLen" },
+
+                { req: "game.data.upgrades.AdachiRei.amount>0", gotten: false, text: "AdachiRei!", desc: "Have 1x AdachiRei" },
+                { req: "game.data.upgrades.AdachiRei.amount>9", gotten: false, text: "AdachiRei x10", desc: "Have 10x AdachiRei" },
+                { req: "game.data.upgrades.AdachiRei.amount>49", gotten: false, text: "AdachiRei x50", desc: "Have 50x AdachiRei" },
+                { req: "game.data.upgrades.AdachiRei.amount>99", gotten: false, text: "AdachiRei x100", desc: "Have 100x AdachiRei" },
+
+                { req: "game.data.upgrades.EleanorForte.amount>0", gotten: false, text: "EleanorForte!", desc: "Have 1x EleanorForte" },
+                { req: "game.data.upgrades.EleanorForte.amount>9", gotten: false, text: "EleanorForte x10", desc: "Have 10x EleanorForte" },
+                { req: "game.data.upgrades.EleanorForte.amount>49", gotten: false, text: "EleanorForte x50", desc: "Have 50x EleanorForte" },
+                { req: "game.data.upgrades.EleanorForte.amount>99", gotten: false, text: "EleanorForte x100", desc: "Have 100x EleanorForte" },
+
+                { req: "game.data.upgrades.YiXi.amount>0", gotten: false, text: "YiXi!", desc: "Have 1x YiXi" },
+                { req: "game.data.upgrades.YiXi.amount>9", gotten: false, text: "YiXi x10", desc: "Have 10x YiXi" },
+                { req: "game.data.upgrades.YiXi.amount>49", gotten: false, text: "YiXi x50", desc: "Have 50x YiXi" },
+                { req: "game.data.upgrades.YiXi.amount>99", gotten: false, text: "YiXi x100", desc: "Have 100x YiXi" },
+
+                { req: "game.data.upgrades.MagurineLuka.amount>0", gotten: false, text: "MagurineLuka!", desc: "Have 1x MagurineLuka" },
+                { req: "game.data.upgrades.MagurineLuka.amount>9", gotten: false, text: "MagurineLuka x10", desc: "Have 10x MagurineLuka" },
+                { req: "game.data.upgrades.MagurineLuka.amount>49", gotten: false, text: "MagurineLuka x50", desc: "Have 50x MagurineLuka" },
+                { req: "game.data.upgrades.MagurineLuka.amount>99", gotten: false, text: "MagurineLuka x100", desc: "Have 100x MagurineLuka" },
+
+                { req: "game.data.upgrades.HakaineMaiko.amount>0", gotten: false, text: "HakaineMaiko!", desc: "Have 1x HakaineMaiko" },
+                { req: "game.data.upgrades.HakaineMaiko.amount>9", gotten: false, text: "HakaineMaiko x10", desc: "Have 10x HakaineMaiko" },
+                { req: "game.data.upgrades.HakaineMaiko.amount>49", gotten: false, text: "HakaineMaiko x50", desc: "Have 50x HakaineMaiko" },
+                { req: "game.data.upgrades.HakaineMaiko.amount>99", gotten: false, text: "HakaineMaiko x100", desc: "Have 100x HakaineMaiko" }
+            ]
+        };
+
+        game.clickFunctions = {
+            buy_upgrade: (name) => {
+                var data = game.data.upgrades[name];
+
+                if (!data) {
+                    console.warn("No data found for upgrade: " + name);
+                    return;
+                };
+
+                var price = game.helper.math.calculateUpgradeCost(data.cost, data.amount, game.tempData.purchaseAmount);
+                if (game.data.music < price) return;
+
+                game.data.music -= price;
+                data.amount++;
+                game.sync.income();
+                game.sync.upgradeList();
+            },
+
+            changeBulk: (amount) => {
+                var valid = [1, 10, 100];
+                if (!valid.includes(amount)) return;
+
+                document.querySelector(`#bulkButton${amount}`).className = "bulkButtonSelected";
+                document.querySelector(`#bulkButton${game.tempData.purchaseAmount}`).className = "bulkButton";
+
+                game.tempData.purchaseAmount = amount;
+                sync.upgradeList(true);
+            }
+        };
+
+        game.onClicked = function(Todo, Data) {
+            if (!game.loaded) {
+                console.warn("onClick rejected, waiting to load data...", "onClicked")
+                return
+            };
+
+            if (game.clickFunctions[Todo]) {
+                try {
+                    game.clickFunctions[Todo](Data);
+                } catch (error) {
+                    console.error("Function errored with name: " + Todo + "\nError: " + error);
+                };
+            } else {
+                console.error("Called invalid function: " + Todo + "\nData: " + Data);
+            };
+        };
+
+        game.loop = function () {
+            game.sync.all();
+
+            setInterval(() => {
+                if (!game.loaded) return false;
+
+                game.data.music += game.data.income / game.tick;
+                game.data.totalMusic += game.data.income / game.tick;
+                game.sync.pointHeader();
+
+                for (i in game.data.achievements) {
+                    var achievement = game.data.achievements[i];
+                    var b = new Function("return " + achievement.req);
+                    if (b() && !achievement.gotten) {
+                        game.data.achievements[i].gotten = true;
+                        document.querySelector("#achievements").innerHTML += `<br>
+                            <div class="achievement">
+                                <div class="title"; style="height: 70%;" id="points_current">
+                                    ${achievement.text}
+                                </div>
+                                <div class="small title" style="height: 30%;" id="points_per_second">
+                                    ${achievement.desc}
+                                </div>
+                            </div>`
+                    };
+                };
+
+                for (const [key, value] of Object.entries(game.delays)) {
+                    value.delay++;
+                    if (value.delay > value.interval) {
+                        value.delay = 0;
+                        value.perform();
+                    };
+                };
+
+            }, 1000/game.tick)
+        };
+
+        game.startup = function() {
+            var cookies = game.storage.get();
+
+            if (cookies != null && cookies != "undefined") {
+                cookies = JSON.parse(cookies);
+
+                for (i in game.data.upgrades) {
+                    if (cookies.upgrades[i] == null) {
+                        cookies.upgrades[i] = game.data.upgrades[i];
+                    };
+                };
+
+                for (i in game.data.achievements) {
+                    if (cookies.achievements[i] == null || game.data.achievements[i].text != game.data.achievements[i].text) {
+                        cookies.achievements[i] = game.data.achievements[i];
+                    };
+                };
+
+                game.data = cookies;
+            };
+
+            game.loop();
+            game.loaded = true;
+        };
+    </script>
+</head>
+
+<!-- HEAD -->
+
+<body onload="game.startup()">
+    <div class="topbar">
+        <a href="https://discord.gg/rPAMv59wPM">Volcalhaven</a>
+        <a href="https://discord.gg/sPQFM9Rj33">Yuna Codes</a>
+        <button onclick="game.storage.save()">Save game</button>
+    </div>
+    <div>
+        <div class="section left">
+            <div class="sectionLeft info">
+                <div class="title" ; style="height: 70%;" id="points_current">
+                    Loading...
+                </div>
+                <div class="small title" style="height: 30%;" id="points_per_second">
+                    Loading...
+                </div>
+            </div>
+            <div class="main buttonAnchor">
+                <button class="main button" ;
+                    onclick="game.data.music += 1; game.data.totalMusic += 1; game.sync.pointHeader();">
+                    <img src="./assets/img/MiguCircle.png" ; style="width: 100%;">
+                </button>
+            </div>
+        </div>
+        <div class="section middle">
+            <div id="achievements" ; class="achievements"></div>
+        </div>
+        <div class="section right">
+            <div>
+                
+            </div>
+            <div class="bulkButtons">
+                <button onclick="game.onClicked('changeBulk', 1)" ; class="bulkButtonSelected" ; id="bulkButton1">x1</button>
+                <button onclick="game.onClicked('changeBulk', 10)" ; class="bulkButton" ; id="bulkButton10">x10</button>
+                <button onclick="game.onClicked('changeBulk', 100)" ; class="bulkButton" ; id="bulkButton100">x100</button>
+            </div>
+            <div id="upgrades" ; class="upgrade list"></div>
+        </div>
+    </div>
+</body>
+
+</html>
