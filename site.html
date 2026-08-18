@@ -171,15 +171,16 @@ I probaly have to revisit old functions to revise as this is my first project th
             notesById: [],
             idCounter: 0,
             new: function(title, desc, icon, lifeCycles) {
-                this.title = title;
-                this.desc = desc;
-                this.icon = icon | "";
-                this.life = lifeCycles * game.tick; // 1 cycle = 1 second cause why not
-                this.id = "note-" + game.note.idCounter;
-                this.added = false;
+                var me = {};
+                me.title = title;
+                me.desc = desc;
+                me.icon = icon | "";
+                me.life = lifeCycles * game.tick; // 1 cycle = 1 second cause why not
+                me.id = "note-" + game.note.idCounter;
+                me.added = false;
                 game.note.idCounter++;
 
-                game.note.notes[toString(this.id)] = this;
+                game.note.notes[me.id] = me; // this is stupid and seemed to not work for this use case... i am stupid no one knows
             },
 
             remove: function(id) {
@@ -201,9 +202,11 @@ I probaly have to revisit old functions to revise as this is my first project th
                     };
 
                     me.life--;
-                    if (me.life < 1) {
-                        delete game.note.notes[me.id];
-                        const element = document.querySelector("#" + me.id)?.remove();
+                    if (!me.life > 0) {
+                        const element = document.querySelector("#" + me.id);
+                        if (element) {
+                            element.remove()
+                        } else delete game.note.notes[me.id];
                     };
                 };
             }
@@ -266,13 +269,13 @@ I probaly have to revisit old functions to revise as this is my first project th
                     var income = game.helper.format.abbreviate(data.income);
 
                     if (game.data.totalSongs < data.cost) {
-                        document.querySelector("#upgrades").innerHTML += `<br><div>
+                        document.querySelector("#upgrades").innerHTML += `<div>
                             <button class="upgrade locked">??? • Cost: ${cost}<br>???/s • ???</button>
-                        </div>`;
+                        </div><br>`;
                     } else {
-                        document.querySelector("#upgrades").innerHTML += `<br><div>
+                        document.querySelector("#upgrades").innerHTML += `<div>
                             <button class="upgrade unlocked"; onclick="game.onClicked('buy_upgrade', '${i}')">${data.name} • Cost: ${cost}<br>${income}/s • ${data.desc}</button>
-                        </div>`;
+                        </div><br>`;
                     };
                 };
             },
@@ -372,17 +375,29 @@ I probaly have to revisit old functions to revise as this is my first project th
         };
 
         { // hope this makes managing data easier
-            game.upgrades.new("Kasane Teto", "Eats baguettes and produces songs", 10, 1);
-            game.upgrades.new("Hatsune Miku", "Migu is cuter anyways...", 100, 2);
-            game.upgrades.new("Gumi", "In circles in circles", 1_250, 8);
-            game.upgrades.new("Mai", "She is on holidays but sends you songs", 13_500, 50);
-            game.upgrades.new("Kagamine Rin", "Just like Kagamine Len", 145_000, 125);
-            game.upgrades.new("Kagamine Len", "Just like Kagamine Rin", 1.5e6, 750);
-            game.upgrades.new("Adachi Rei", "This heat is pretty abnormal", 7.5e6, 3_000);
-            game.upgrades.new("Eleanor Forte", "They said it looked like rain", 25e6, 8_500);
-            game.upgrades.new("Yi Xi", "They said it looked like rain", 100e6, 25_000);
-            game.upgrades.new("Magurine Luka", "The fish will never be forgotten", 650e6, 75_000);
-            game.upgrades.new("Hakaine Maiko", "Perfection!", 2.5e9, 250_000);
+            /*
+            10, 1
+            100, 2,
+            1_250, 8,
+            13_500, 50,
+            140_000, 250
+            1_500_000, 750,
+            7_500_000, 3_000,
+            25e6, 10_000,
+            100e6, 45_000,
+            650e6, 145_000,
+            2_500e6, 250_000
+            */
+            game.upgrades.new("Hatsune Miku", "Migu is cuter anyways...", 10, 1);
+            game.upgrades.new("Kagamine Twins", "Just like Kagamine Len", 100, 2);
+            game.upgrades.new("Magurine Luka", "The fish will never be forgotten", 1_250, 8);
+            game.upgrades.new("Hakaine Maiko", "Perfection!", 13_500, 50);
+            game.upgrades.new("Kamui Gakupo", "Purple eggplant freak", 140_000, 250);
+            game.upgrades.new("Gumi", "In circles in circles", 1_500_000, 750);
+            game.upgrades.new("Flower", "Moves pretty abnormaly", 7_500_000, 3_000);
+            game.upgrades.new("Oliver", "Steam powered", 25e6, 10_000);
+            game.upgrades.new("Yazuki Yukari", "Sent a rabbit to moon", 100e6, 45_000);
+            game.upgrades.new("Kasane Teto", "Eats baguettes and produces songs", 600e6, 145_000);
         };
 
         game.achievements = {
@@ -444,11 +459,13 @@ I probaly have to revisit old functions to revise as this is my first project th
             game.achievements.newTiered("Small published", "", "songs", 2);
             game.achievements.newTiered("Song production", "", "songs", { todo: "overwrite", amount: 1_000 });
             game.achievements.newTiered("VIP", "Earn 1337 songs", "", { todo: "overwrite", amount: 1337, extra: ["no_abbreviate"] });
+            game.achievements.newTiered("Silver", "Earn 100.000 songs", "", { todo: "overwrite", amount: 100_000 });
             game.achievements.newTiered("Golden", "Earn 1.000.000 songs", "", { todo: "overwrite", amount: 1_000_000 });
+            game.achievements.newTiered("Diamond", "Earn 1 Billion songs", "", { todo: "overwrite", amount: 1_000_000_000 });
 
             game.achievements.newTiered("Kasane Teto", "", "Kasane Teto", 0);
             game.achievements.newTiered("Baguette lover", "", "Kasane Teto", 1);
-            game.achievements.newTiered("Teto teretory", "", "Kasane Teto", 2);
+            game.achievements.newTiered("Teto Territory", "", "Kasane Teto", 2);
 
             game.achievements.newTiered("Hatsune Miku", "", "Hatsune Miku", 0);
             game.achievements.newTiered("Self made man", "", "Hatsune Miku", 1);
@@ -466,6 +483,14 @@ I probaly have to revisit old functions to revise as this is my first project th
             //game.achievements.new("Kagamine Rin", "Unlock Kagamine Rin");
             //game.achievements.new("Unwritten", "Have 50x Kagamine Rin");
             //game.achievements.new("Unwritten", "Have 100x Kagamine Rin");
+
+            //game.achievements.new("Kagamine Len", "Unlock Kagamine Len");
+            //game.achievements.new("Unwritten", "Have 50x Kagamine Len");
+            //game.achievements.new("Unwritten", "Have 100x Kagamine Len");
+
+            //game.achievements.new("Adachi Rei", "Unlock Adachi Rei");
+            //game.achievements.new("Unwritten", "Have 50x Adachi Rei");
+            //game.achievements.new("Unwritten", "Have 100x Adachi Rei");
         };
 
         game.clickFunctions = {
@@ -489,7 +514,7 @@ I probaly have to revisit old functions to revise as this is my first project th
                 var a = escapeSpace("Kasane Teto");
                 if (game.data.upgrades[a].amount>0) game.achievements.award("Kasane Teto");
                 if (game.data.upgrades[a].amount>49) game.achievements.award("Baguette Lover");
-                if (game.data.upgrades[a].amount>99) game.achievements.award("Teto Teretory");
+                if (game.data.upgrades[a].amount>99) game.achievements.award("Teto Territory");
 
                 a = escapeSpace("Hatsune Miku");
                 if (game.data.upgrades[a].amount>0) game.achievements.award("Hatsune Miku");
@@ -541,11 +566,13 @@ I probaly have to revisit old functions to revise as this is my first project th
                 game.data.totalSongs += game.data.income / game.tick;
                 game.sync.pointHeader();
 
-                if (new Function("return " + "game.data.songs>0")()) game.achievements.award("First song");
-                if (new Function("return " + "game.data.songs>99")()) game.achievements.award("Small published");
-                if (new Function("return " + "game.data.songs>999")()) game.achievements.award("Song production");
-                if (new Function("return " + "game.data.songs>1336")()) game.achievements.award("VIP");
-                if (new Function("return " + "game.data.songs>999999")()) game.achievements.award("Golden");
+                if (new Function("return " + "game.data.totalSongs>0")()) game.achievements.award("First song");
+                if (new Function("return " + "game.data.totalSongs>99")()) game.achievements.award("Small published");
+                if (new Function("return " + "game.data.totalSongs>999")()) game.achievements.award("Song production");
+                if (new Function("return " + "game.data.totalSongs>1336")()) game.achievements.award("VIP");
+                if (new Function("return " + "game.data.totalSongs>99999")()) game.achievements.award("Silver");
+                if (new Function("return " + "game.data.totalSongs>999999")()) game.achievements.award("Golden");
+                if (new Function("return " + "game.data.totalSongs>9999999")()) game.achievements.award("Diamond");
 
                 for (const [key, value] of Object.entries(game.delays)) {
                     value.delay++;
@@ -610,9 +637,10 @@ I probaly have to revisit old functions to revise as this is my first project th
             <div id="notes" ; class="notes"></div>
         </div>
         <div class="section right">
-            <div>
-                
+            <div  class="shopTitle">
+                <h1>Store</h1>
             </div>
+            <br>
             <div class="bulkButtons">
                 <button onclick="game.onClicked('changeBulk', 1)" ; class="bulkButtonSelected" ; id="bulkButton1">x1</button>
                 <button onclick="game.onClicked('changeBulk', 10)" ; class="bulkButton" ; id="bulkButton10">x10</button>

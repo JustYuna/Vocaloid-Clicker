@@ -175,16 +175,42 @@ div,span,h1,h2,h3,h4,h5,h6,p{
     border-color: rgb(150, 100, 150);
 }
 
+.shopTitle {
+    position: absolute;
+    left: 3.5%;
+    width: 80%;
+    height: 5%;
+
+    background: rgb(225, 200, 250);
+
+    border-radius: 15px;
+    border-style: dashed;
+    border-color: rgb(125, 100, 250);
+
+    box-shadow: 5px 5px 5px var(--color-box-shadow);
+}
+
+.shopTitle h1 {
+    text-align: center;
+}
+
 .bulkButtons {
+    position: absolute;
+    top: 7.5%;
     width: 87%;
     height: 3%;
+
     display: grid;
     grid-template-columns: 33% 33% 33%;
     overflow: hidden;
+
     border-radius: 1ch;
     border-style: dashed;
+
     border-color: rgb(150, 100, 150);
     background-color: rgb(250, 200, 250);
+
+    box-shadow: 5px 5px 5px var(--color-box-shadow);
 }
 
 .bulkButton {
@@ -219,6 +245,9 @@ div,span,h1,h2,h3,h4,h5,h6,p{
 }
 
 .upgrade.list {
+    position: absolute;
+    top: 13%;
+
     width: 100%;
     height: 80%;
 
