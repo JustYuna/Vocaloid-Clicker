@@ -232,23 +232,23 @@ I probaly have to revisit old functions to revise as this is my first project th
 
                 var needsReset = force | false;
                 for (i in game.data.upgrades) {
-                    var data = game.data.upgrades[i];
-                    var cached = game.cache.upgradeList[data.name];
+                    var me = game.data.upgrades[i];
+                    var cached = game.cache.upgradeList[i];
                     if (!cached) {
-                        game.cache.upgradeList[data.name] = { amount: 0, couldAfford: false, cost: 0 };
-                        cached = game.cache.upgradeList[data.name];
+                        game.cache.upgradeList[i] = { amount: 0, couldAfford: false, cost: 0 };
+                        cached = game.cache.upgradeList[i];
                     };
 
-                    var price = game.helper.math.calculateUpgradeCost(data.cost, data.amount, game.tempData.purchaseAmount);
+                    var price = game.helper.math.calculateUpgradeCost(me.cost, me.amount, game.tempData.purchaseAmount);
                     var canAfford = game.data.songs >= price;
 
-                    var amountMatch = cached.amount == data.amount;
+                    var amountMatch = cached.amount == me.amount;
                     var costMatch = cached.cost == price;
                     var affordMatch = cached.couldAfford == canAfford;
 
                     if (!amountMatch | !costMatch | !affordMatch) {
                         needsReset = true;
-                        game.cache.upgradeList[data.name] = { amount: data.amount, couldAfford: canAfford, cost: price };
+                        game.cache.upgradeList[i] = { amount: me.amount, couldAfford: canAfford, cost: price };
                     };
                 };
 
@@ -258,7 +258,7 @@ I probaly have to revisit old functions to revise as this is my first project th
                 for (i in game.data.upgrades) {
                     var data = game.data.upgrades[i];
                     var text = "Could not fetch";
-                    var cached = game.cache.upgradeList[data.name];
+                    var cached = game.cache.upgradeList[i];
                     if (!cached) continue;
 
                     var price = cached.cost;
@@ -267,12 +267,12 @@ I probaly have to revisit old functions to revise as this is my first project th
 
                     if (game.data.totalSongs < data.cost) {
                         document.querySelector("#upgrades").innerHTML += `<br><div>
-                                <button class="upgrade locked">??? • Cost: ${cost}<br>???/s • ???</button>
-                            </div>`;
+                            <button class="upgrade locked">??? • Cost: ${cost}<br>???/s • ???</button>
+                        </div>`;
                     } else {
                         document.querySelector("#upgrades").innerHTML += `<br><div>
                             <button class="upgrade unlocked"; onclick="game.onClicked('buy_upgrade', '${i}')">${data.name} • Cost: ${cost}<br>${income}/s • ${data.desc}</button>
-                            </div>`;
+                        </div>`;
                     };
                 };
             },
@@ -346,122 +346,44 @@ I probaly have to revisit old functions to revise as this is my first project th
             songs: 0,
             totalSongs: 0,
             income: 0,
-            upgrades: {
-                kasane_teto: {
-                    amount: 0,
-                    cost: 10,
-                    income: 1,
-                    unlocked: false,
-                    name: "Kasane Teto",
-                    desc: "Eats baguettes and generates songs."
-                },
-                hatsune_miku: {
-                    amount: 0,
-                    cost: 100,
-                    income: 2,
-
-                    unlocked: false,
-
-                    name: "Hatsune Miku",
-                    desc: "Migu is cuter anyways..."
-                },
-                gumi: {
-                    amount: 0,
-                    cost: 1_250,
-                    income: 8,
-
-                    unlocked: false,
-
-                    name: "Gumi",
-                    desc: "In circles in circles we go"
-                },
-                mai: {
-                    amount: 0,
-                    cost: 13_500,
-                    income: 50,
-
-                    unlocked: false,
-
-                    name: "Mai",
-                    desc: "She is on holidays"
-                },
-                kagamine_rin: {
-                    amount: 0,
-                    cost: 145_000,
-                    income: 125,
-
-                    unlocked: false,
-
-                    name: "Kagamine Rin",
-                    desc: "Just like Kagamine Len"
-                },
-                kagamine_len: {
-                    amount: 0,
-                    cost: 1.5e6,
-                    income: 1_250,
-
-                    unlocked: false,
-
-                    name: "Kagamine Len",
-                    desc: "Just like Kagamine Rin"
-                },
-                adachi_rei: {
-                    amount: 0,
-                    cost: 7.5e6,
-                    income: 3_000,
-
-                    unlocked: false,
-
-                    name: "Adachi Rei",
-                    desc: "This heat is pretty abnormal"
-                },
-                eleanor_forte: {
-                    amount: 0,
-                    cost: 25e6,
-                    income: 8_500,
-
-                    unlocked: false,
-
-                    name: "Eleanor Forte",
-                    desc: "They said it looked like rain"
-                },
-                yi_xi: {
-                    amount: 0,
-                    cost: 100e6,
-                    income: 25_000,
-
-                    unlocked: false,
-
-                    name: "Xi Yi",
-                    desc: "Animal cannibal"
-                },
-                magurine_luka: {
-                    amount: 0,
-                    cost: 650e6,
-                    income: 75_000,
-
-                    unlocked: false,
-
-                    name: "Magurine Luka",
-                    desc: "The fish will never be forgotten..."
-                },
-                hakaine_maiko: {
-                    amount: 0,
-                    cost: 2.5e9,
-                    income: 250_000,
-
-                    unlocked: false,
-
-                    name: "Hakaine Maiko",
-                    desc: "Perfection!"
-                }
-            },
+            upgrades: {},
             achievements: {}
         };
 
         // • • • • • • • • • • • • • • • •
-        // Add achievements to data
+        // Add to data
         // • • • • • • • • • • • • • • • •
+
+        game.upgrades = {
+            id: 0,
+            new: function(name, desc, cost, income) {
+                var me = {};
+                me.id = game.upgrades.id;
+                me.name = name;
+                me.desc = desc;
+                me.cost = cost;
+                me.income = income;
+                me.unlocked = false;
+                me.amount = 0;
+                game.upgrades.id++;
+
+                game.data.upgrades[escapeSpace(name)] = me;
+            }
+        };
+
+        { // hope this makes managing data easier
+            game.upgrades.new("Kasane Teto", "Eats baguettes and produces songs", 10, 1);
+            game.upgrades.new("Hatsune Miku", "Migu is cuter anyways...", 100, 2);
+            game.upgrades.new("Gumi", "In circles in circles", 1_250, 8);
+            game.upgrades.new("Mai", "She is on holidays but sends you songs", 13_500, 50);
+            game.upgrades.new("Kagamine Rin", "Just like Kagamine Len", 145_000, 125);
+            game.upgrades.new("Kagamine Len", "Just like Kagamine Rin", 1.5e6, 750);
+            game.upgrades.new("Adachi Rei", "This heat is pretty abnormal", 7.5e6, 3_000);
+            game.upgrades.new("Eleanor Forte", "They said it looked like rain", 25e6, 8_500);
+            game.upgrades.new("Yi Xi", "They said it looked like rain", 100e6, 25_000);
+            game.upgrades.new("Magurine Luka", "The fish will never be forgotten", 650e6, 75_000);
+            game.upgrades.new("Hakaine Maiko", "Perfection!", 2.5e9, 250_000);
+        };
 
         game.achievements = {
             id: 0,
@@ -508,7 +430,6 @@ I probaly have to revisit old functions to revise as this is my first project th
                 if (desc == "") {  me.desc = str; } else me.desc = desc;
 
                 game.data.achievements[escapeSpace(name)] = me;
-                console.log(me);
             },
             award: function(name) {
                 if (game.data.achievements[escapeSpace(name)]?.earned) return;
@@ -525,32 +446,22 @@ I probaly have to revisit old functions to revise as this is my first project th
             game.achievements.newTiered("VIP", "Earn 1337 songs", "", { todo: "overwrite", amount: 1337, extra: ["no_abbreviate"] });
             game.achievements.newTiered("Golden", "Earn 1.000.000 songs", "", { todo: "overwrite", amount: 1_000_000 });
 
-            game.achievements.id = 1000;
-
             game.achievements.newTiered("Kasane Teto", "", "Kasane Teto", 0);
             game.achievements.newTiered("Baguette lover", "", "Kasane Teto", 1);
             game.achievements.newTiered("Teto teretory", "", "Kasane Teto", 2);
-
-            game.achievements.id = 2000;
 
             game.achievements.newTiered("Hatsune Miku", "", "Hatsune Miku", 0);
             game.achievements.newTiered("Self made man", "", "Hatsune Miku", 1);
             game.achievements.newTiered("Migu was here", "", "Hatsune Miku", 2);
 
-            game.achievements.id = 3000;
-
             game.achievements.newTiered("Gumi", "", "Gumi", 0);
             game.achievements.newTiered("I Feed", "", "Gumi", 1);
             game.achievements.newTiered("In circles in circles", "", "Gumi", 2);
-
-            game.achievements.id = 4000;
 
             // Need to write the names before i can use them for data
             //game.achievements.new("Mai", "Unlock Mai");
             //game.achievements.new("Unwritten", "Have 50x Mai");
             //game.achievements.new("Unwritten", "Have 100x Mai");
-
-            game.achievements.id = 5000;
 
             //game.achievements.new("Kagamine Rin", "Unlock Kagamine Rin");
             //game.achievements.new("Unwritten", "Have 50x Kagamine Rin");
@@ -559,10 +470,10 @@ I probaly have to revisit old functions to revise as this is my first project th
 
         game.clickFunctions = {
             buy_upgrade: (name) => {
-                var data = game.data.upgrades[name];
+                var data = game.data.upgrades[escapeSpace(name)];
 
                 if (!data) {
-                    console.warn("No data found for upgrade: " + name);
+                    console.warn("No data found for upgrade: " + escapeSpace(name));
                     return;
                 };
 
@@ -575,17 +486,20 @@ I probaly have to revisit old functions to revise as this is my first project th
                 game.sync.upgradeList();
 
                 // idk how efficient this is but ill roll with it for now
-                if (new Function("return " + 'game.data.upgrades.kasane_teto.amount>0')()) game.achievements.award("Kasane Teto");
-                if (new Function("return " + 'game.data.upgrades.kasane_teto.amount>49')()) game.achievements.award("Baguette lover");
-                if (new Function("return " + 'game.data.upgrades.kasane_teto.amount>99')()) game.achievements.award("Teto teretory");
+                var a = escapeSpace("Kasane Teto");
+                if (game.data.upgrades[a].amount>0) game.achievements.award("Kasane Teto");
+                if (game.data.upgrades[a].amount>49) game.achievements.award("Baguette Lover");
+                if (game.data.upgrades[a].amount>99) game.achievements.award("Teto Teretory");
 
-                if (new Function("return " + 'game.data.upgrades.hatsune_miku.amount>0')()) game.achievements.award("Hatsune Miku");
-                if (new Function("return " + 'game.data.upgrades.hatsune_miku.amount>49')()) game.achievements.award("Self made man");
-                if (new Function("return " + 'game.data.upgrades.hatsune_miku.amount>99')()) game.achievements.award("Migu was here");
+                a = escapeSpace("Hatsune Miku");
+                if (game.data.upgrades[a].amount>0) game.achievements.award("Hatsune Miku");
+                if (game.data.upgrades[a].amount>49) game.achievements.award("Self made man");
+                if (game.data.upgrades[a].amount>99) game.achievements.award("Migu was here");
 
-                if (new Function("return " + 'game.data.upgrades.gumi.amount>0')()) game.achievements.award("Gumi");
-                if (new Function("return " + 'game.data.upgrades.gumi.amount>49')()) game.achievements.award("I Feed");
-                if (new Function("return " + 'game.data.upgrades.gumi.amount>99')()) game.achievements.award("In circles in circles");
+                a = escapeSpace("Gumi");
+                if (game.data.upgrades[a].amount>0) game.achievements.award("Gumi");
+                if (game.data.upgrades[a].amount>49) game.achievements.award("I Feed");
+                if (game.data.upgrades[a].amount>99) game.achievements.award("In circles in circles");
             },
 
             changeBulk: (amount) => {
