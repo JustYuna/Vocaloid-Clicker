@@ -36,8 +36,7 @@ I probaly have to revisit old functions to revise as this is my first project th
 
 
         function escapeRegExp(str){return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");};
-        // https://stackoverflow.com/questions/1704246/escape-a-white-space-character-using-javascript
-        function escapeSpace(str){return str.replace(/([ /])/g, '\\$1')};
+        function escapeSpace(str){return str.replace(" ", "")}; // seems like what i needed was so easy to make
 
 
         var game = {};
@@ -411,7 +410,8 @@ I probaly have to revisit old functions to revise as this is my first project th
                 me.earned = false;
                 game.achievements.id++;
 
-                game.data.achievements[escapeSpace(name)] = me;
+                if (game.data.achievements[escapeSpace(name)] ) return console.warn("Achievement with name " + name + " already exists")
+                game.data.achievements[escapeSpace(name)] = me
             },
             newTiered: function(name, desc, objective, param) {
                 var me = {};
@@ -444,9 +444,11 @@ I probaly have to revisit old functions to revise as this is my first project th
 
                 if (desc == "") {  me.desc = str; } else me.desc = desc;
 
+                if (game.data.achievements[escapeSpace(name)] ) return console.warn("Achievement with name " + name + " already exists")
                 game.data.achievements[escapeSpace(name)] = me;
             },
             award: function(name) {
+                if (!game.data.achievements[escapeSpace(name)]) return console.log("Trying to set null achievement " + escapeSpace(name)); 
                 if (game.data.achievements[escapeSpace(name)]?.earned) return;
 
                 game.note.new("~ Achievement Unlocked ~", name, "", 120);
@@ -463,34 +465,45 @@ I probaly have to revisit old functions to revise as this is my first project th
             game.achievements.newTiered("Golden", "Earn 1.000.000 songs", "", { todo: "overwrite", amount: 1_000_000 });
             game.achievements.newTiered("Diamond", "Earn 1 Billion songs", "", { todo: "overwrite", amount: 1_000_000_000 });
 
-            game.achievements.newTiered("Kasane Teto", "", "Kasane Teto", 0);
-            game.achievements.newTiered("Baguette lover", "", "Kasane Teto", 1);
-            game.achievements.newTiered("Teto Territory", "", "Kasane Teto", 2);
-
             game.achievements.newTiered("Hatsune Miku", "", "Hatsune Miku", 0);
             game.achievements.newTiered("Self made man", "", "Hatsune Miku", 1);
             game.achievements.newTiered("Migu was here", "", "Hatsune Miku", 2);
+
+            game.achievements.newTiered("Kagamine Twins", "", "Kagamine Twins", 0);
+            game.achievements.newTiered("2 for 1", "", "Kagamine Twins", 1);
+            game.achievements.newTiered("ADDIKT ADDIKT", "", "Kagamine Twins", 2);
+
+            game.achievements.newTiered("Magurine Luka", "", "Magurine Luka", 0);
+            game.achievements.newTiered("Last of Me", "", "Magurine Luka", 1);
+            game.achievements.newTiered("Tako Luka Maguro Fever", "", "Magurine Luka", 2);
+
+            game.achievements.newTiered("Hakaine Maiko", "", "Hakaine Maiko", 0);
+            game.achievements.newTiered("Rebound", "", "Hakaine Maiko", 1);
+            game.achievements.newTiered("Silver Shirley", "", "Hakaine Maiko", 2);
+
+            game.achievements.newTiered("Kamui Gakupo", "", "Kamui Gakupo", 0);
+            game.achievements.newTiered("ACUTE", "", "Kamui Gakupo", 1);
+            game.achievements.newTiered("Dancing Samurai", "", "Kamui Gakupo", 2);
 
             game.achievements.newTiered("Gumi", "", "Gumi", 0);
             game.achievements.newTiered("I Feed", "", "Gumi", 1);
             game.achievements.newTiered("In circles in circles", "", "Gumi", 2);
 
-            // Need to write the names before i can use them for data
-            //game.achievements.new("Mai", "Unlock Mai");
-            //game.achievements.new("Unwritten", "Have 50x Mai");
-            //game.achievements.new("Unwritten", "Have 100x Mai");
+            game.achievements.newTiered("Flower", "", "Flower", 0);
+            game.achievements.newTiered("Abnormaly Dancing Girl", "", "Flower", 1);
+            game.achievements.newTiered("Protodisco", "", "Flower", 2);
 
-            //game.achievements.new("Kagamine Rin", "Unlock Kagamine Rin");
-            //game.achievements.new("Unwritten", "Have 50x Kagamine Rin");
-            //game.achievements.new("Unwritten", "Have 100x Kagamine Rin");
+            game.achievements.newTiered("Oliver", "", "Oliver", 0);
+            game.achievements.newTiered("The Detective", "", "Oliver", 1);
+            game.achievements.newTiered("Candle Boy", "", "Oliver", 2);
 
-            //game.achievements.new("Kagamine Len", "Unlock Kagamine Len");
-            //game.achievements.new("Unwritten", "Have 50x Kagamine Len");
-            //game.achievements.new("Unwritten", "Have 100x Kagamine Len");
+            game.achievements.newTiered("Yazuki Yukari", "", "Yazuki Yukari", 0);
+            game.achievements.newTiered("Guillotine", "", "Yazuki Yukari", 1);
+            game.achievements.newTiered("Stardust", "", "Yazuki Yukari", 2);
 
-            //game.achievements.new("Adachi Rei", "Unlock Adachi Rei");
-            //game.achievements.new("Unwritten", "Have 50x Adachi Rei");
-            //game.achievements.new("Unwritten", "Have 100x Adachi Rei");
+            game.achievements.newTiered("Kasane Teto", "", "Kasane Teto", 0);
+            game.achievements.newTiered("Baguette lover", "", "Kasane Teto", 1);
+            game.achievements.newTiered("Teto Territory", "", "Kasane Teto", 2);
         };
 
         game.clickFunctions = {
@@ -511,20 +524,55 @@ I probaly have to revisit old functions to revise as this is my first project th
                 game.sync.upgradeList();
 
                 // idk how efficient this is but ill roll with it for now
-                var a = escapeSpace("Kasane Teto");
-                if (game.data.upgrades[a].amount>0) game.achievements.award("Kasane Teto");
-                if (game.data.upgrades[a].amount>49) game.achievements.award("Baguette Lover");
-                if (game.data.upgrades[a].amount>99) game.achievements.award("Teto Territory");
-
-                a = escapeSpace("Hatsune Miku");
+                var a = escapeSpace("Hatsune Miku");
                 if (game.data.upgrades[a].amount>0) game.achievements.award("Hatsune Miku");
                 if (game.data.upgrades[a].amount>49) game.achievements.award("Self made man");
                 if (game.data.upgrades[a].amount>99) game.achievements.award("Migu was here");
+
+                a = escapeSpace("Kagamine Twins");
+                if (game.data.upgrades[a].amount>0) game.achievements.award("Kagamine Twins");
+                if (game.data.upgrades[a].amount>49) game.achievements.award("2 fo 1");
+                if (game.data.upgrades[a].amount>99) game.achievements.award("ADDIKT ADDIKT");
+
+                a = escapeSpace("Magurine Luka");
+                if (game.data.upgrades[a].amount>0) game.achievements.award("Magurine Luka");
+                if (game.data.upgrades[a].amount>49) game.achievements.award("Last of Me");
+                if (game.data.upgrades[a].amount>99) game.achievements.award("Tako Luka Maguro Fever");
+
+                a = escapeSpace("Hakaine Maiko");
+                if (game.data.upgrades[a].amount>0) game.achievements.award("Hakaine Maiko");
+                if (game.data.upgrades[a].amount>49) game.achievements.award("Rebound");
+                if (game.data.upgrades[a].amount>99) game.achievements.award("Silver Shirley");
+
+                a = escapeSpace("Kamui Gakupo");
+                if (game.data.upgrades[a].amount>0) game.achievements.award("Kamui Gakupo");
+                if (game.data.upgrades[a].amount>49) game.achievements.award("ACUTE");
+                if (game.data.upgrades[a].amount>99) game.achievements.award("Dancing Samurai");
 
                 a = escapeSpace("Gumi");
                 if (game.data.upgrades[a].amount>0) game.achievements.award("Gumi");
                 if (game.data.upgrades[a].amount>49) game.achievements.award("I Feed");
                 if (game.data.upgrades[a].amount>99) game.achievements.award("In circles in circles");
+
+                a = escapeSpace("Flower");
+                if (game.data.upgrades[a].amount>0) game.achievements.award("Flower");
+                if (game.data.upgrades[a].amount>49) game.achievements.award("Abnormaly Dancing Girl");
+                if (game.data.upgrades[a].amount>99) game.achievements.award("Protodisco");
+
+                a = escapeSpace("Oliver");
+                if (game.data.upgrades[a].amount>0) game.achievements.award("Oliver");
+                if (game.data.upgrades[a].amount>49) game.achievements.award("The Detective");
+                if (game.data.upgrades[a].amount>99) game.achievements.award("Candle Boy");
+
+                a = escapeSpace("Yazuki Yukari");
+                if (game.data.upgrades[a].amount>0) game.achievements.award("Yazuki Yukari");
+                if (game.data.upgrades[a].amount>49) game.achievements.award("Guillotine");
+                if (game.data.upgrades[a].amount>99) game.achievements.award("Stardust");
+                
+                a = escapeSpace("Kasane Teto");
+                if (game.data.upgrades[a].amount>0) game.achievements.award("Kasane Teto");
+                if (game.data.upgrades[a].amount>49) game.achievements.award("Baguette Lover");
+                if (game.data.upgrades[a].amount>99) game.achievements.award("Teto Territory");
             },
 
             changeBulk: (amount) => {
@@ -546,11 +594,7 @@ I probaly have to revisit old functions to revise as this is my first project th
             };
 
             if (game.clickFunctions[Todo]) {
-                try {
-                    game.clickFunctions[Todo](Data);
-                } catch (error) {
-                    console.error("Function errored with name: " + Todo + "\nError: " + error);
-                };
+                game.clickFunctions[Todo](Data);
             } else {
                 console.error("Called invalid function: " + Todo + "\nData: " + Data);
             };
