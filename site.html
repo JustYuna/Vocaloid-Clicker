@@ -179,7 +179,7 @@ I probaly have to revisit old functions to revise as this is my first project th
                 me.added = false;
                 game.note.idCounter++;
 
-                game.note.notes[me.id] = me; // this is stupid and seemed to not work for this use case... i am stupid no one knows
+                game.note.notes[me.id] = me; // this. is stupid and seemed to not work for this use case... or i am stupid no one knows
             },
 
             remove: function(id) {
@@ -312,7 +312,7 @@ I probaly have to revisit old functions to revise as this is my first project th
         game.delays = {
             save: {
                 delay: 0,
-                interval: 60 * 5,
+                interval: 300 * game.tick, // 1 = 1sec
                 perform: () => {
                     game.storage.save();
                     console.log("Saved cookies")
@@ -320,14 +320,14 @@ I probaly have to revisit old functions to revise as this is my first project th
             },
             guiSync: {
                 delay: 0,
-                interval: 1 * 5,
+                interval: 1 * game.tick,
                 perform: () => {
                     game.sync.upgradeList();
                 }
             },
             siteTitle: {
                 delay: 0,
-                interval: 5 * 5,
+                interval: 5 * game.tick,
                 perform: () => {
                     document.title = game.helper.format.abbreviate(Math.round(game.data.songs)) + " songs - Volcaloid Clicker";
                 }
