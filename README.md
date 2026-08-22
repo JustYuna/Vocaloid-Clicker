@@ -13,7 +13,9 @@ This "Game" is heavely inspired by cookie clicker
 
 ---
 
-#### Play here: https://justyuna.github.io/Volcaloid-Clicker/
+#### Play here: [Volcaloid Clicker](https://justyuna.github.io/Volcaloid-Clicker/)
+#### Support Server: [Yuna Codes](https://discord.gg/sPQFM9Rj33)
+#### Helper Server: [Volcalhaven](https://discord.gg/rPAMv59wPM)
 
 ---
 
