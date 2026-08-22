@@ -385,7 +385,7 @@ I probaly have to revisit old functions to revise as this is my first project th
             25e6, 10_000,
             100e6, 45_000,
             650e6, 145_000,
-            2_500e6, 250_000
+            2.5e9, 250_000
             */
             game.upgrades.new("Hatsune Miku", "Migu is cuter anyways...", 10, 1);
             game.upgrades.new("Kagamine Twins", "Just like Kagamine Len", 100, 2);
@@ -397,6 +397,7 @@ I probaly have to revisit old functions to revise as this is my first project th
             game.upgrades.new("Oliver", "Steam powered", 25e6, 10_000);
             game.upgrades.new("Yazuki Yukari", "Sent a rabbit to moon", 100e6, 45_000);
             game.upgrades.new("Kasane Teto", "Eats baguettes and produces songs", 600e6, 145_000);
+            game.upgrades.new("Kaai Yuki", " ITS FREAKIM WIMDY", 2.5e9, 250_000);
         };
 
         game.achievements = {
@@ -504,6 +505,10 @@ I probaly have to revisit old functions to revise as this is my first project th
             game.achievements.newTiered("Kasane Teto", "", "Kasane Teto", 0);
             game.achievements.newTiered("Baguette lover", "", "Kasane Teto", 1);
             game.achievements.newTiered("Teto Territory", "", "Kasane Teto", 2);
+
+            game.achievements.newTiered("Kaai Yuki", "", "Kaai Yuki", 0);
+            game.achievements.newTiered("Sweet lies", "", "Kaai Yuki", 1);
+            game.achievements.newTiered("Deja vu?", "", "Kaai Yuki", 2);
         };
 
         game.clickFunctions = {
@@ -573,6 +578,11 @@ I probaly have to revisit old functions to revise as this is my first project th
                 if (game.data.upgrades[a].amount>0) game.achievements.award("Kasane Teto");
                 if (game.data.upgrades[a].amount>49) game.achievements.award("Baguette Lover");
                 if (game.data.upgrades[a].amount>99) game.achievements.award("Teto Territory");
+                
+                a = escapeSpace("Kaai Yuki");
+                if (game.data.upgrades[a].amount>0) game.achievements.award("Kaai Yuki");
+                if (game.data.upgrades[a].amount>49) game.achievements.award("Sweet lies");
+                if (game.data.upgrades[a].amount>99) game.achievements.award("Deja vu?");
             },
 
             changeBulk: (amount) => {
