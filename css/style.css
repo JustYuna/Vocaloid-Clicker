@@ -276,6 +276,12 @@ div,span,h1,h2,h3,h4,h5,h6,p{
     border-color: rgb(100, 150, 100);
 }
 
+.upgrade.owned {
+    position: absolute;
+    right: 10%;
+    top: 0%;
+}
+
 .title {
     font-size: large;
     text-align: center;
