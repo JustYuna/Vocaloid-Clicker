@@ -219,6 +219,7 @@ game.sync = {
 
   upgradeList: (force) => {
     if (!game.cache.upgradeList) game.cache.upgradeList = {};
+    var id = 0;
 
     var needsReset = force | false;
     for (i in game.data.upgrades) {
@@ -256,14 +257,24 @@ game.sync = {
       var income = game.helper.format.abbreviate(data.income);
 
       if (game.data.totalSongs < data.cost) {
-        document.querySelector("#upgrades").innerHTML += `<div>
-                            <button class="upgrade locked">??? • Cost: ${cost}<br>???/s • ???</button>
-                        </div><br>`;
+        document.querySelector("#upgrades").innerHTML += `<div class="upgrade holder"; style="top: ${10 * id}%;">
+                            <button class="upgrade locked">
+                              <div class="upgrade title">???</div>
+                              <div class="upgrade title">???</div>
+                              <div class="upgrade amount">0</div>
+                            </button>
+                        </div>`;
       } else {
-        document.querySelector("#upgrades").innerHTML += `<div>
-                            <button class="upgrade unlocked"; onclick="game.onClicked('buy_upgrade', '${i}')">${data.name} • Cost: ${cost}<br>${income}/s • ${data.desc}</button>
-                        </div><br>`;
+        document.querySelector("#upgrades").innerHTML += `<div class="upgrade holder"; style="top: ${10 * id}%;">
+                            <button class="upgrade unlocked"; onclick="game.onClicked('buy_upgrade', '${i}')">
+                              <div class="upgrade title">${data.name}</div>
+                              <div class="upgrade sub_title">${cost}</div>
+                              <div class="upgrade amount">${data.amount}</div>
+                            </button>
+                        </div>`;
       };
+
+      id++;
     };
   },
 

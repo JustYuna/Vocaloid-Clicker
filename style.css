@@ -24,6 +24,7 @@ body {
     background: linear-gradient(180deg, var(--color-main) 0%, var(--color-main) 75%, var(--color-darkest-main) 100%);
     font-family: Montserrat-Black;
     overflow: hidden;
+    user-select: none;
 }
 
 button, p, h1, h2, h3 {
@@ -249,14 +250,21 @@ div,span,h1,h2,h3,h4,h5,h6,p{
     top: 13%;
 
     width: 100%;
-    height: 80%;
+    height: 90%;
 
     overflow-y: scroll;
     scrollbar-color: var(--color-darkest-main) transparent;
     scrollbar-width: thin;
 }
 
+.upgrade.holder {
+    position: absolute;
+    width: 100%;
+    height: 8%;
+}
+
 .upgrade.locked {
+    height: 100%;
     width: 90%;
     background-color: rgb(150, 200, 150);
     padding: 1em;
@@ -267,6 +275,7 @@ div,span,h1,h2,h3,h4,h5,h6,p{
 }
 
 .upgrade.unlocked {
+    height: 100%;
     width: 90%;
     background-color: rgb(200, 250, 200);
     padding: 1em;
@@ -276,10 +285,31 @@ div,span,h1,h2,h3,h4,h5,h6,p{
     border-color: rgb(100, 150, 100);
 }
 
-.upgrade.owned {
+.upgrade.unlocked:hover {
+    background-color: rgb(175, 225, 175);
+}
+
+.upgrade.title {
     position: absolute;
-    right: 10%;
-    top: 0%;
+    left: 10px;
+    top: 10px;
+    text-align: left;
+}
+
+.upgrade.sub_title {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    text-align: left;
+}
+
+.upgrade.amount {
+    position: absolute;
+    right: 15%;
+    top: 15%;
+    text-align: right;
+    font-size: 35px;
+    opacity: 0.5;
 }
 
 .title {
