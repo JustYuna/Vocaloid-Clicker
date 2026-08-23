@@ -264,6 +264,7 @@ div,span,h1,h2,h3,h4,h5,h6,p{
 }
 
 .upgrade.locked {
+    position: absolute;
     height: 100%;
     width: 90%;
     background-color: rgb(150, 200, 150);
@@ -275,6 +276,7 @@ div,span,h1,h2,h3,h4,h5,h6,p{
 }
 
 .upgrade.unlocked {
+    position: absolute;
     height: 100%;
     width: 90%;
     background-color: rgb(200, 250, 200);

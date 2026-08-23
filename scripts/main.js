@@ -328,7 +328,7 @@ game.delays = {
     delay: 0,
     interval: 5 * game.tick,
     perform: () => {
-      document.title = game.helper.format.abbreviate(Math.round(game.data.songs)) + " songs - Volcaloid Clicker";
+      document.title = game.helper.format.abbreviate(Math.round(game.data.songs)) + " songs - Vocaloid Clicker";
     }
   }
 };
