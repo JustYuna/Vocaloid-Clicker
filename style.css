@@ -130,7 +130,7 @@ div,span,h1,h2,h3,h4,h5,h6,p{
     border-radius: 100%;
     border-style: dashed;
     border-color: rgb(175, 175, 175);
-    background: url(../assets/img/MiguCircle.png);
+    background: url(./assets/img/MiguCircle.png);
     background-size: cover;
 }
 
@@ -152,7 +152,7 @@ div,span,h1,h2,h3,h4,h5,h6,p{
 .main.buttonImage {
     width: 100%;
 
-    content: url('../assets/images/MiguCircle.png');
+    content: url('./assets/images/MiguCircle.png');
 }
 
 .notes {
