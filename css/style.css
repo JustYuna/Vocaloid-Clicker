@@ -37,6 +37,14 @@ div,span,h1,h2,h3,h4,h5,h6,p{
     padding:0;
 }
 
+.version {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    color: rgb(250, 250,);
+    opacity: 0.5;
+}
+
 .topbar {
     width: 100%;
     height: 5%;

@@ -30,6 +30,7 @@ function escapeSpace(str) { return str.replace(" ", "") }; // seems like what i 
 
 var game = {};
 
+game.version = "2026.08.24"
 game.saveTo = "VolcaloidClickerGame";
 game.cache = {};
 
@@ -658,8 +659,8 @@ game.startup = function () {
       if (!data[i]) {
         console.log("Added " + i + " to outdated data");
         data[i] = game.data[i];
-      }
-    }
+      };
+    };
 
     for (i in game.data.upgrades) {
       if (data.upgrades[i] == null) {
@@ -669,6 +670,8 @@ game.startup = function () {
 
     game.data = data;
   };
+
+  document.querySelector(`#version`).innerHTML = "V. " + game.version;
 
   game.loop();
   game.loaded = true;
