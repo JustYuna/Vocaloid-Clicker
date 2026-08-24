@@ -114,7 +114,6 @@ game.storage = {
         local = window.localStorage.setItem(game.saveTo, str);
       } catch (expection) { };
 
-      console.log("Game saved");
       game.note.new("Game saved", "", "", 4);
     }
   },
@@ -215,8 +214,8 @@ game.sync = {
   income: () => {
     var income = 0;
 
-    for (i in game.data.upgrades) {
-      var data = game.data.upgrades[i];
+    for (i in game.data.products) {
+      var data = game.data.products[i];
       var reward = (data.amount * data.income);
       income += reward;
     };
@@ -224,13 +223,13 @@ game.sync = {
     game.data.income = income;
   },
 
-  upgradeList: (force) => {
+  products: (force) => {
     if (!game.cache.upgradeList) game.cache.upgradeList = {};
     var id = 0;
 
     var needsReset = force | false;
-    for (i in game.data.upgrades) {
-      var me = game.data.upgrades[i];
+    for (i in game.data.products) {
+      var me = game.data.products[i];
       var cached = game.cache.upgradeList[i];
       if (!cached) {
         game.cache.upgradeList[i] = { amount: 0, couldAfford: false, cost: 0 };
@@ -251,10 +250,10 @@ game.sync = {
     };
 
     if (!needsReset) return;
-    document.querySelector("#upgrades").innerHTML = "";
+    document.querySelector("#products").innerHTML = "";
 
-    for (i in game.data.upgrades) {
-      var data = game.data.upgrades[i];
+    for (i in game.data.products) {
+      var data = game.data.products[i];
       var text = "Could not fetch";
       var cached = game.cache.upgradeList[i];
       if (!cached) continue;
@@ -264,19 +263,19 @@ game.sync = {
       var income = game.helper.format.abbreviate(data.income);
 
       if (game.data.totalSongs < data.cost) {
-        document.querySelector("#upgrades").innerHTML += `<div class="upgrade holder"; style="top: ${10 * id}%;">
-                            <button class="upgrade locked">
-                              <div class="upgrade title">???</div>
-                              <div class="upgrade title">???</div>
-                              <div class="upgrade amount">0</div>
+        document.querySelector("#products").innerHTML += `<div class="product holder"; style="top: ${10 * id}%;">
+                            <button class="product locked">
+                              <div class="product title">???</div>
+                              <div class="product title">???</div>
+                              <div class="product amount">0</div>
                             </button>
                         </div>`;
       } else {
-        document.querySelector("#upgrades").innerHTML += `<div class="upgrade holder"; style="top: ${10 * id}%;">
-                            <button class="upgrade unlocked"; onclick="game.onClicked('buy_upgrade', '${i}')">
-                              <div class="upgrade title">${data.name}</div>
-                              <div class="upgrade sub_title">${cost}</div>
-                              <div class="upgrade amount">${data.amount}</div>
+        document.querySelector("#products").innerHTML += `<div class="product holder"; style="top: ${10 * id}%;">
+                            <button class="product unlocked"; onclick="game.onClicked('buy_product', '${i}')">
+                              <div class="product title">${data.name}</div>
+                              <div class="product sub_title">${cost}</div>
+                              <div class="product amount">${data.amount}</div>
                             </button>
                         </div>`;
       };
@@ -318,17 +317,16 @@ game.tick = 30;
 game.delays = {
   save: {
     delay: 0,
-    interval: 300 * game.tick, // 1 = 1sec
+    interval: 60 * game.tick, // 1 = 1sec
     perform: () => {
       game.storage.save();
-      console.log("Saved cookies")
     }
   },
   guiSync: {
     delay: 0,
     interval: 1 * game.tick,
     perform: () => {
-      game.sync.upgradeList();
+      game.sync.products();
     }
   },
   siteTitle: {
@@ -355,7 +353,7 @@ game.data = {
   totalSongs: 0,
   income: 0,
   clickMultiplier: 1,
-  upgrades: {},
+  products: {},
   achievements: {}
 };
 
@@ -363,20 +361,20 @@ game.data = {
 // Add to data
 // • • • • • • • • • • • • • • • •
 
-game.upgrades = {
+game.products = {
   id: 0,
   new: function (name, desc, cost, income) {
     var me = {};
-    me.id = game.upgrades.id;
+    me.id = game.products.id;
     me.name = name;
     me.desc = desc;
     me.cost = cost;
     me.income = income;
     me.unlocked = false;
     me.amount = 0;
-    game.upgrades.id++;
+    game.products.id++;
 
-    game.data.upgrades[escapeSpace(name)] = me;
+    game.data.products[escapeSpace(name)] = me;
   }
 };
 
@@ -394,17 +392,17 @@ game.upgrades = {
   650e6, 145_000,
   2.5e9, 250_000
   */
-  game.upgrades.new("Hatsune Miku", "Migu is cuter anyways...", 10, 1);
-  game.upgrades.new("Kagamine Twins", "Just like Kagamine Len", 100, 2);
-  game.upgrades.new("Magurine Luka", "The fish will never be forgotten", 1_250, 8);
-  game.upgrades.new("Hakaine Maiko", "Perfection!", 13_500, 50);
-  game.upgrades.new("Kamui Gakupo", "Purple eggplant freak", 140_000, 250);
-  game.upgrades.new("Gumi", "In circles in circles", 1_500_000, 750);
-  game.upgrades.new("Flower", "Moves pretty abnormaly", 7_500_000, 3_000);
-  game.upgrades.new("Oliver", "Steam powered", 25e6, 10_000);
-  game.upgrades.new("Yazuki Yukari", "Sent a rabbit to moon", 100e6, 45_000);
-  game.upgrades.new("Kasane Teto", "Eats baguettes and produces songs", 600e6, 145_000);
-  game.upgrades.new("Kaai Yuki", " ITS FREAKIM WIMDY", 2.5e9, 250_000);
+  game.products.new("Hatsune Miku", "Migu is cuter anyways...", 10, 1);
+  game.products.new("Kagamine Twins", "Just like Kagamine Len", 100, 2);
+  game.products.new("Magurine Luka", "The fish will never be forgotten", 1_250, 8);
+  game.products.new("Hakaine Maiko", "Perfection!", 13_500, 50);
+  game.products.new("Kamui Gakupo", "Purple eggplant freak", 140_000, 250);
+  game.products.new("Gumi", "In circles in circles", 1_500_000, 750);
+  game.products.new("Flower", "Moves pretty abnormaly", 7_500_000, 3_000);
+  game.products.new("Oliver", "Steam powered", 25e6, 10_000);
+  game.products.new("Yazuki Yukari", "Sent a rabbit to moon", 100e6, 45_000);
+  game.products.new("Kasane Teto", "Eats baguettes and produces songs", 600e6, 145_000);
+  game.products.new("Kaai Yuki", " ITS FREAKIM WIMDY", 2.5e9, 250_000);
 };
 
 game.achievements = {
@@ -519,8 +517,8 @@ game.achievements = {
 };
 
 game.clickFunctions = {
-  buy_upgrade: (name) => {
-    var data = game.data.upgrades[escapeSpace(name)];
+  buy_product: (name) => {
+    var data = game.data.products[escapeSpace(name)];
 
     if (!data) {
       console.warn("No data found for upgrade: " + escapeSpace(name));
@@ -533,63 +531,64 @@ game.clickFunctions = {
     game.data.songs -= price;
     data.amount += game.tempData.purchaseAmount;
     game.sync.income();
-    game.sync.upgradeList();
+    game.sync.products();
 
     // idk how efficient this is but ill roll with it for now
+    // NOTE: its fair enough
     var a = escapeSpace("Hatsune Miku");
-    if (game.data.upgrades[a].amount > 0) game.achievements.award("Hatsune Miku");
-    if (game.data.upgrades[a].amount > 49) game.achievements.award("Self made man");
-    if (game.data.upgrades[a].amount > 99) game.achievements.award("Migu was here");
+    if (game.data.products[a].amount > 0) game.achievements.award("Hatsune Miku");
+    if (game.data.products[a].amount > 49) game.achievements.award("Self made man");
+    if (game.data.products[a].amount > 99) game.achievements.award("Migu was here");
 
     a = escapeSpace("Kagamine Twins");
-    if (game.data.upgrades[a].amount > 0) game.achievements.award("Kagamine Twins");
-    if (game.data.upgrades[a].amount > 49) game.achievements.award("2 fo 1");
-    if (game.data.upgrades[a].amount > 99) game.achievements.award("ADDIKT ADDIKT");
+    if (game.data.products[a].amount > 0) game.achievements.award("Kagamine Twins");
+    if (game.data.products[a].amount > 49) game.achievements.award("2 fo 1");
+    if (game.data.products[a].amount > 99) game.achievements.award("ADDIKT ADDIKT");
 
     a = escapeSpace("Magurine Luka");
-    if (game.data.upgrades[a].amount > 0) game.achievements.award("Magurine Luka");
-    if (game.data.upgrades[a].amount > 49) game.achievements.award("Last of Me");
-    if (game.data.upgrades[a].amount > 99) game.achievements.award("Tako Luka Maguro Fever");
+    if (game.data.products[a].amount > 0) game.achievements.award("Magurine Luka");
+    if (game.data.products[a].amount > 49) game.achievements.award("Last of Me");
+    if (game.data.products[a].amount > 99) game.achievements.award("Tako Luka Maguro Fever");
 
     a = escapeSpace("Hakaine Maiko");
-    if (game.data.upgrades[a].amount > 0) game.achievements.award("Hakaine Maiko");
-    if (game.data.upgrades[a].amount > 49) game.achievements.award("Rebound");
-    if (game.data.upgrades[a].amount > 99) game.achievements.award("Silver Shirley");
+    if (game.data.products[a].amount > 0) game.achievements.award("Hakaine Maiko");
+    if (game.data.products[a].amount > 49) game.achievements.award("Rebound");
+    if (game.data.products[a].amount > 99) game.achievements.award("Silver Shirley");
 
     a = escapeSpace("Kamui Gakupo");
-    if (game.data.upgrades[a].amount > 0) game.achievements.award("Kamui Gakupo");
-    if (game.data.upgrades[a].amount > 49) game.achievements.award("ACUTE");
-    if (game.data.upgrades[a].amount > 99) game.achievements.award("Dancing Samurai");
+    if (game.data.products[a].amount > 0) game.achievements.award("Kamui Gakupo");
+    if (game.data.products[a].amount > 49) game.achievements.award("ACUTE");
+    if (game.data.products[a].amount > 99) game.achievements.award("Dancing Samurai");
 
     a = escapeSpace("Gumi");
-    if (game.data.upgrades[a].amount > 0) game.achievements.award("Gumi");
-    if (game.data.upgrades[a].amount > 49) game.achievements.award("I Feed");
-    if (game.data.upgrades[a].amount > 99) game.achievements.award("In circles in circles");
+    if (game.data.products[a].amount > 0) game.achievements.award("Gumi");
+    if (game.data.products[a].amount > 49) game.achievements.award("I Feed");
+    if (game.data.products[a].amount > 99) game.achievements.award("In circles in circles");
 
     a = escapeSpace("Flower");
-    if (game.data.upgrades[a].amount > 0) game.achievements.award("Flower");
-    if (game.data.upgrades[a].amount > 49) game.achievements.award("Abnormaly Dancing Girl");
-    if (game.data.upgrades[a].amount > 99) game.achievements.award("Protodisco");
+    if (game.data.products[a].amount > 0) game.achievements.award("Flower");
+    if (game.data.products[a].amount > 49) game.achievements.award("Abnormaly Dancing Girl");
+    if (game.data.products[a].amount > 99) game.achievements.award("Protodisco");
 
     a = escapeSpace("Oliver");
-    if (game.data.upgrades[a].amount > 0) game.achievements.award("Oliver");
-    if (game.data.upgrades[a].amount > 49) game.achievements.award("The Detective");
-    if (game.data.upgrades[a].amount > 99) game.achievements.award("Candle Boy");
+    if (game.data.products[a].amount > 0) game.achievements.award("Oliver");
+    if (game.data.products[a].amount > 49) game.achievements.award("The Detective");
+    if (game.data.products[a].amount > 99) game.achievements.award("Candle Boy");
 
     a = escapeSpace("Yazuki Yukari");
-    if (game.data.upgrades[a].amount > 0) game.achievements.award("Yazuki Yukari");
-    if (game.data.upgrades[a].amount > 49) game.achievements.award("Guillotine");
-    if (game.data.upgrades[a].amount > 99) game.achievements.award("Stardust");
+    if (game.data.products[a].amount > 0) game.achievements.award("Yazuki Yukari");
+    if (game.data.products[a].amount > 49) game.achievements.award("Guillotine");
+    if (game.data.products[a].amount > 99) game.achievements.award("Stardust");
 
     a = escapeSpace("Kasane Teto");
-    if (game.data.upgrades[a].amount > 0) game.achievements.award("Kasane Teto");
-    if (game.data.upgrades[a].amount > 49) game.achievements.award("Baguette Lover");
-    if (game.data.upgrades[a].amount > 99) game.achievements.award("Teto Territory");
+    if (game.data.products[a].amount > 0) game.achievements.award("Kasane Teto");
+    if (game.data.products[a].amount > 49) game.achievements.award("Baguette Lover");
+    if (game.data.products[a].amount > 99) game.achievements.award("Teto Territory");
 
     a = escapeSpace("Kaai Yuki");
-    if (game.data.upgrades[a].amount > 0) game.achievements.award("Kaai Yuki");
-    if (game.data.upgrades[a].amount > 49) game.achievements.award("Sweet lies");
-    if (game.data.upgrades[a].amount > 99) game.achievements.award("Deja vu?");
+    if (game.data.products[a].amount > 0) game.achievements.award("Kaai Yuki");
+    if (game.data.products[a].amount > 49) game.achievements.award("Sweet lies");
+    if (game.data.products[a].amount > 99) game.achievements.award("Deja vu?");
   },
 
   changeBulk: (amount) => {
@@ -600,7 +599,7 @@ game.clickFunctions = {
     document.querySelector(`#bulkButton${game.tempData.purchaseAmount}`).className = "bulkButton";
 
     game.tempData.purchaseAmount = amount;
-    game.sync.upgradeList(true);
+    game.sync.products(true);
   }
 };
 
@@ -651,6 +650,12 @@ game.loop = function () {
 game.startup = function () {
   var data = game.storage.get();
 
+  // Migrate cause theres already a page where users have data
+  if (data.upgrades) {
+    data.products = data.upgrades;
+    delete data.ugprades;
+  }
+
   if (data != null && data != "undefined") {
     data = JSON.parse(data);
 
@@ -662,9 +667,17 @@ game.startup = function () {
       };
     };
 
-    for (i in game.data.upgrades) {
-      if (data.upgrades[i] == null) {
-        data.upgrades[i] = game.data.upgrades[i];
+    // Add good products
+    for (i in game.data.products) {
+      if (data.products[i] == null) {
+        data.products[i] = game.data.products[i];
+      };
+    };
+
+    // Remove stupid products
+    for (i in data.products) {
+      if (game.data.products[i] == null) {
+        delete game.products[i];
       };
     };
 
