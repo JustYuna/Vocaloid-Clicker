@@ -40,7 +40,7 @@ I probaly have to revisit old functions to revise as this is my first project th
             </div>
             <div class="main buttonAnchor">
                 <button class="main button" ;
-                    onclick="game.data.songs += 1; game.data.totalSongs += 1; game.sync.pointHeader();">
+                    onclick="var a = game.helper.math.clickAmount(); game.data.songs += a; game.data.totalSongs += a;">
                 </button>
             </div>
         </div>
@@ -58,6 +58,9 @@ I probaly have to revisit old functions to revise as this is my first project th
                 <button onclick="game.onClicked('changeBulk', 100)" ; class="bulkButton" ; id="bulkButton100">x100</button>
             </div>
             <div id="upgrades" ; class="upgrade list"></div>
+        </div>
+        <div class="tooltip">
+            
         </div>
     </div>
 </body>

@@ -78,6 +78,12 @@ game.helper.math = {
     } while (amount > 0);
     return Math.round(price)
   },
+
+  clickAmount: () => {
+    var a = 1;
+    a *= game.data.clickMultiplier;
+    return a
+  }
 };
 
 // • • • • • • • • • • • • • • • •
@@ -347,6 +353,7 @@ game.data = {
   songs: 0,
   totalSongs: 0,
   income: 0,
+  clickMultiplier: 1,
   upgrades: {},
   achievements: {}
 };
@@ -641,18 +648,26 @@ game.loop = function () {
 };
 
 game.startup = function () {
-  var cookies = game.storage.get();
+  var data = game.storage.get();
 
-  if (cookies != null && cookies != "undefined") {
-    cookies = JSON.parse(cookies);
+  if (data != null && data != "undefined") {
+    data = JSON.parse(data);
+
+    // add missing data for when i add new values
+    for (i in game.data) {
+      if (!data[i]) {
+        console.log("Added " + i + " to outdated data");
+        data[i] = game.data[i];
+      }
+    }
 
     for (i in game.data.upgrades) {
-      if (cookies.upgrades[i] == null) {
-        cookies.upgrades[i] = game.data.upgrades[i];
+      if (data.upgrades[i] == null) {
+        data.upgrades[i] = game.data.upgrades[i];
       };
     };
 
-    game.data = cookies;
+    game.data = data;
   };
 
   game.loop();
