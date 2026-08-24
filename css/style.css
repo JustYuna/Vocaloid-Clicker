@@ -107,7 +107,7 @@ div,span,h1,h2,h3,h4,h5,h6,p{
 .main.buttonAnchor {
     position: absolute;
     left: 50%;
-    top: 30%;
+    top: 35%;
 }
 
 .main.button {
@@ -122,6 +122,9 @@ div,span,h1,h2,h3,h4,h5,h6,p{
     border-color: rgb(175, 175, 175);
     background: url(../assets/img/MiguCircle.png);
     background-size: cover;
+
+    transition-duration: 75ms;
+    transition-timing-function: ease-in-out;
 }
 
 .main.button:hover {
