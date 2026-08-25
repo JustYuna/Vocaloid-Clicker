@@ -292,7 +292,7 @@ game.sync = {
                             </button>
                         </div>`;
       } else {
-        if (game.data.songs < data.cost) {
+        if (game.data.songs < price) {
           document.querySelector("#products").innerHTML += `<div class="product holder"; style="top: ${10 * id}%;">
                               <button class="product locked"; onclick="game.onClicked('buy_product', '${i}')">
                                 <div class="product title">${data.name}</div>
