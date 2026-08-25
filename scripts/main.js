@@ -31,7 +31,6 @@ function chooseArray(arr) { return arr[Math.floor(Math.random()*arr.length)]; };
 
 var game = {};
 
-game.version = "2026.08.25"
 game.saveTo = "VolcaloidClickerGame";
 game.mouse = { X: 0, Y: 0 };
 game.cache = {};
@@ -192,14 +191,19 @@ game.note = {
     me.icon = icon | "";
     me.life = lifeCycles * game.tick; // 1 cycle = 1 second cause why not
     me.id = "note-" + game.note.idCounter;
-    me.added = false;
+    me.document = `<button onclick="game.note.remove('`+me.id+`')"; id="${me.id}"; class="note">
+                      <div class="title"; style="height: 70%;">${me.title}</div>
+                      <div class="small title"; style="height: 30%;">${me.desc}</div>
+                    </button>`;
     game.note.idCounter++;
+    document.querySelector("#notes").innerHTML+=me.document;
 
     game.note.notes[me.id] = me; // this. is stupid and seemed to not work for this use case... or i am stupid no one knows
+
   },
 
   remove: function (id) {
-    if (game.notes[id]) game.notes[id].life = 0;
+    if (game.note.notes[id]) game.note.notes[id].life = 0;
   },
 
   removeAll: function () {
@@ -209,23 +213,17 @@ game.note = {
 
   logic: function () {
     for (var [_, me] of Object.entries(game.note.notes)) {
-      if (!me.added) {
-        me.added = true;
-        var str = `<div id=${me.id}><div class="note"><div class="title"; style="height: 70%;">${me.title}</div><div class="small title"; style="height: 30%;">${me.desc}</div></div><br></div>`;
-        document.querySelector("#notes").innerHTML += str;
-      };
-
       me.life--;
-      if (!me.life > 0) {
-        const element = document.querySelector("#" + me.id);
-        if (element) {
-          element.remove()
+      if (me.life < 0) {
+        const e = document.querySelector("#"+me.id);
+        if (e) {
+          e.remove();
+          me.element = null;
         } else delete game.note.notes[me.id];
       };
     };
   }
 };
-
 
 // • • • • • • • • • • • • • • • •
 // Sync Helper
@@ -665,6 +663,39 @@ game.onClicked = function (Todo, Data) {
   };
 };
 
+// • • • • • • • • • • • • • • • •
+// Update Logs
+// • • • • • • • • • • • • • • • •
+
+game.logs = {
+  data: "",
+  add: function(v,arr) {
+    game.logs.data+="<h2>"+v+"</h2>";
+    var d = ["p", "h3"]
+    for (var me of arr) {
+      game.logs.data+=`<${d[me.size]}>`+me.text+`</${d[me.size]}>`
+    };
+    game.logs.data+="<br>";
+  }
+};
+
+{
+  game.logs.add("2026.08.26", [
+    { text: "Added logs.", size: 0 },
+    { text: "Notes can be removed by clicking them now.", size: 0 }
+  ]);
+  game.logs.add("2026.08.25", [
+    { text: "Added better indicator for when you can afford products.", size: 0 },
+    { text: "Added contribution tab to topbar.", size: 0 },
+    { text: "Fixed afford visualizer going of base price not current.", size: 0 }
+  ]);
+  game.logs.add("2026.08.24", [
+    { text: "Game shows now the version.", size: 0 },
+    { text: "Internal click boost for future upgrades.", size: 0 },
+    { text: "Data handling ugprades.", size: 0 }
+  ]);
+};
+
 game.loop = function () {
   game.sync.all();
 
@@ -733,7 +764,7 @@ game.startup = function () {
     game.data = data;
   };
 
-  document.querySelector(`#version`).innerHTML = "V. " + game.version;
+  document.querySelector("#logs").innerHTML=game.logs.data;
 
   // Source - https://stackoverflow.com/a/34348306
   // Posted by RegarBoy, modified by community. See post 'Timeline' for change history
