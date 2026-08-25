@@ -32,6 +32,7 @@ var game = {};
 
 game.version = "2026.08.24"
 game.saveTo = "VolcaloidClickerGame";
+game.mouse = { X: 0, Y: 0 };
 game.cache = {};
 
 // • • • • • • • • • • • • • • • •
@@ -81,7 +82,7 @@ game.helper.math = {
   },
 
   clickAmount: () => {
-    var a = 1;
+    var a = game.data.clickIncome;
     a *= game.data.clickMultiplier;
     return a
   }
@@ -156,6 +157,24 @@ game.storage = {
 }
 
 // • • • • • • • • • • • • • • • •
+//  Animator
+// • • • • • • • • • • • • • • • •
+
+game.animator = {
+  data: [],
+  add: function(element, data, time) {
+    var me = {
+      data: data,
+      time: time * game.tick,
+      now: 0,
+    };
+  },
+  logic: function() {
+    
+  }
+};
+
+// • • • • • • • • • • • • • • • •
 // Notifications
 // • • • • • • • • • • • • • • • •
 
@@ -220,7 +239,7 @@ game.sync = {
       income += reward;
     };
 
-    game.data.income = income;
+    game.data.income = income * game.data.incomeMultiplier;
   },
 
   products: (force) => {
@@ -318,22 +337,29 @@ game.delays = {
   save: {
     delay: 0,
     interval: 60 * game.tick, // 1 = 1sec
-    perform: () => {
+    perform: function() {
       game.storage.save();
     }
   },
   guiSync: {
     delay: 0,
     interval: 1 * game.tick,
-    perform: () => {
+    perform: function() {
       game.sync.products();
     }
   },
   siteTitle: {
     delay: 0,
     interval: 5 * game.tick,
-    perform: () => {
+    perform: function() {
       document.title = game.helper.format.abbreviate(Math.round(game.data.songs)) + " songs - Vocaloid Clicker";
+    }
+  },
+  time: {
+    delay: 0,
+    interval: 1 * game.tick,
+    perform: function() {
+      game.data.secondsPassed++;
     }
   }
 };
@@ -351,7 +377,11 @@ game.tempData = {
 game.data = {
   songs: 0,
   totalSongs: 0,
+  clicked: 0,
+  secondsPassed: 0,
   income: 0,
+  incomeMultiplier: 1,
+  clickIncome: 1,
   clickMultiplier: 1,
   products: {},
   achievements: {}
@@ -517,7 +547,7 @@ game.achievements = {
 };
 
 game.clickFunctions = {
-  buy_product: (name) => {
+  buy_product: function(name) {
     var data = game.data.products[escapeSpace(name)];
 
     if (!data) {
@@ -591,7 +621,7 @@ game.clickFunctions = {
     if (game.data.products[a].amount > 99) game.achievements.award("Deja vu?");
   },
 
-  changeBulk: (amount) => {
+  changeBulk: function(amount) {
     var valid = [1, 10, 100];
     if (!valid.includes(amount)) return;
 
@@ -600,6 +630,25 @@ game.clickFunctions = {
 
     game.tempData.purchaseAmount = amount;
     game.sync.products(true);
+  },
+
+  mainButton: function() {
+    var a = game.helper.math.clickAmount();
+    game.data.songs += a;
+    game.data.totalSongs += a;
+    game.data.clicked++;
+
+    /*
+    var d = document.createElement("div");
+    d.className = "buttonClickEffect";
+    d.style.top = game.mouse.Y + "px";
+    d.style.left = game.mouse.X + "px";
+    d.innerHTML = "+" + game.helper.format.abbreviate(a);
+    document.body.appendChild(d);
+	  d.addEventListener('animationend',function() {
+      d.parentElement.removeChild(d);
+    }.bind(this));
+    */
   }
 };
 
@@ -685,6 +734,25 @@ game.startup = function () {
   };
 
   document.querySelector(`#version`).innerHTML = "V. " + game.version;
+
+  // Source - https://stackoverflow.com/a/34348306
+  // Posted by RegarBoy, modified by community. See post 'Timeline' for change history
+  // Retrieved 2026-08-25, License - CC BY-SA 4.0
+  // modified by Yuna2077 (2026.08.24)
+  document.onmousemove = function(e) {
+    game.mouse.X = e.clientX;
+    game.mouse.Y = e.clientY;
+  };
+  document.onclick = function() {
+    var d = document.createElement("div");
+    d.className = "clickEffect";
+    d.style.top = game.mouse.Y + "px";
+    d.style.left = game.mouse.X + "px";
+    document.body.appendChild(d);
+	  d.addEventListener('animationend',function() {
+      d.parentElement.removeChild(d);
+    }.bind(this));
+  };
 
   game.loop();
   game.loaded = true;

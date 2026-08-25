@@ -148,6 +148,47 @@ div,span,h1,h2,h3,h4,h5,h6,p{
     content: url('../assets/images/MiguCircle.png');
 }
 
+div.buttonClickEffect {
+    position: fixed;
+    box-sizing: border-box;
+    border-style: hidden;
+
+    font-size: 35px;
+    color: rgb(0, 0, 0);
+
+    z-index: 99999;
+    pointer-events: none;
+}
+
+div.clickEffect {
+	position: fixed;
+	box-sizing: border-box;
+
+	border-style: dashed;
+	border-color: rgb(0, 0, 0);
+	border-radius: 50%;
+
+	animation: clickEffect 0.4s ease-out;
+
+	z-index: 99999;
+    pointer-events: none;
+}
+
+@keyframes clickEffect{
+	0%{
+		opacity: 0.5;
+		width: 0.5em; height: 0.5em;
+		margin: -0.25em;
+		border-width: 0.5rem;
+	}
+	100%{
+		opacity: 0;
+		width: 15em; height: 15em;
+		margin: -7.5em;
+		border-width: 0.03rem;
+	}
+}
+
 .section.middle {
     left: 33.5%;
     top: 7.5%;
