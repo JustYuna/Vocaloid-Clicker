@@ -757,7 +757,7 @@ game.startup = function () {
   var b = "";
   var bc = 0;
   do {
-    b += chooseArray([ "+", "-", "*", ".", "♡", "₊", "⊹" ]) + " "
+    b += chooseArray([ "+", "-" ]) + " "
     bc++;
   } while (bc < 10_000);
   document.querySelector("#background").innerHTML = b;
