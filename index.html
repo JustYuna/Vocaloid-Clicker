@@ -29,7 +29,7 @@ I probaly have to revisit old functions to revise as this is my first project th
         <a href="https://discord.gg/sPQFM9Rj33">Yuna Codes</a>
         <button onclick="game.storage.save()">Save game</button>
         <button onclick="game.storage.reset()">Reset game</button>
-        <button onclick="document.querySelector('#contribute').style.visibility = (document.querySelector('#contribute').style.visibility == 'hidden') ? 'visible' : 'hidden';" >Contribute</button>
+        <button onclick="document.querySelector('#contribute').style.visibility = (document.querySelector('#contribute').style.visibility == 'hidden') ? 'visible' : 'hidden';" >Credits</button>
     </div>
     <div>
         <div class="section left">
@@ -66,18 +66,32 @@ I probaly have to revisit old functions to revise as this is my first project th
             
         </div>
         <div class="contribute"; id="contribute" >
-            <h2>Want to contribute?</h2>
-            <br>
-            <h3>- Images</h3>
-            <p>1. No freaky, nsfw or other things that should be common sense.</p>
-            <p>2. To add images hit me up (Discord: yuna.2077, Matrix: @yuna2077:matrix.org, Github: JustYuna).</p>
-            <p>3. Style is not really relevant.</p>
-            <br>
-            <h3>~ Code ~</h3>
-            <p>Feel free to suggest me optimizations or future update ideas</p>
-            <br>
-            <h3>⚠️ Note ⚠️</h3>
-            <p>It is not guaranteed that i will include everything sent to me.</p>
+            <div class="contributeButtons">
+                <button class="contributeButton"; onclick="document.querySelector('#contribute_help').style.display = 'none'; document.querySelector('#contribute_credits').style.display = ''" >Credits</button>
+                <button class="contributeButton"; onclick="document.querySelector('#contribute_help').style.display = ''; document.querySelector('#contribute_credits').style.display = 'none'" >Help</button>
+            </div>
+            <h4>- - - - - - - - - - - - - - - - - - - - - - - - - - - - -</h4>
+            <div id="contribute_help"; style="display: none;" >
+                <h2>Want to contribute?</h2>
+                <br>
+                <h3>- Images ~</h3>
+                <p>1. No freaky, nsfw or other things that should be common sense.</p>
+                <p>2. To add images hit me up (Discord: yuna.2077, Matrix: @yuna2077:matrix.org, Github: JustYuna).</p>
+                <p>3. Style is not really relevant.</p>
+                <br>
+                <h3>~ Code ~</h3>
+                <p>Feel free to suggest me optimizations or future update ideas</p>
+                <br>
+                <h3>⚠️ Note ⚠️</h3>
+                <p>It is not guaranteed that i will include everything sent to me.</p>
+            </div>
+            <div id="contribute_credits" >
+                <h3>♡ Made by Yuna2077 ♡</h3>
+                <br>
+                <h3>~ Suggestions ~</h3>
+                <br>
+                <h4>@ilylilylila</h4>
+            </div>
         </div>
     </div>
 </body>
