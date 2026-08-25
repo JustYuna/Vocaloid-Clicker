@@ -31,7 +31,7 @@ function chooseArray(arr) { return arr[Math.floor(Math.random()*arr.length)]; };
 
 var game = {};
 
-game.version = "2026.08.24"
+game.version = "2026.08.25"
 game.saveTo = "VolcaloidClickerGame";
 game.mouse = { X: 0, Y: 0 };
 game.cache = {};
@@ -166,9 +166,10 @@ game.animator = {
   add: function(element, data, time) {
     var me = {
       data: data,
-      time: time * game.tick,
-      now: 0,
+      life: time * game.tick,
     };
+
+    game.animator.data.push(me);
   },
   logic: function() {
     
@@ -291,13 +292,23 @@ game.sync = {
                             </button>
                         </div>`;
       } else {
-        document.querySelector("#products").innerHTML += `<div class="product holder"; style="top: ${10 * id}%;">
-                            <button class="product unlocked"; onclick="game.onClicked('buy_product', '${i}')">
-                              <div class="product title">${data.name}</div>
-                              <div class="product sub_title">${cost}</div>
-                              <div class="product amount">${data.amount}</div>
-                            </button>
-                        </div>`;
+        if (game.data.songs < data.cost) {
+          document.querySelector("#products").innerHTML += `<div class="product holder"; style="top: ${10 * id}%;">
+                              <button class="product locked"; onclick="game.onClicked('buy_product', '${i}')">
+                                <div class="product title">${data.name}</div>
+                                <div class="product sub_title">${cost}</div>
+                                <div class="product amount">${data.amount}</div>
+                              </button>
+                          </div>`;
+        } else {
+          document.querySelector("#products").innerHTML += `<div class="product holder"; style="top: ${10 * id}%;">
+                              <button class="product unlocked"; onclick="game.onClicked('buy_product', '${i}')">
+                                <div class="product title">${data.name}</div>
+                                <div class="product sub_title">${cost}</div>
+                                <div class="product amount">${data.amount}</div>
+                              </button>
+                          </div>`;
+          };
       };
 
       id++;
@@ -542,9 +553,9 @@ game.achievements = {
   game.achievements.newTiered("Baguette lover", "", "Kasane Teto", 1);
   game.achievements.newTiered("Teto Territory", "", "Kasane Teto", 2);
 
-  game.achievements.newTiered("Kaai Yuki", "", "Kaai Yuki", 0);
-  game.achievements.newTiered("Sweet lies", "", "Kaai Yuki", 1);
-  game.achievements.newTiered("Deja vu?", "", "Kaai Yuki", 2);
+  game.achievements.newTiered("Song Factory", "", "Song Factory", 0);
+  game.achievements.newTiered("Steady Production", "", "Song Factory", 1);
+  game.achievements.newTiered("Booming Production", "", "Song Factory", 2);
 };
 
 game.clickFunctions = {
@@ -616,10 +627,10 @@ game.clickFunctions = {
     if (game.data.products[a].amount > 49) game.achievements.award("Baguette Lover");
     if (game.data.products[a].amount > 99) game.achievements.award("Teto Territory");
 
-    a = escapeSpace("Kaai Yuki");
-    if (game.data.products[a].amount > 0) game.achievements.award("Kaai Yuki");
-    if (game.data.products[a].amount > 49) game.achievements.award("Sweet lies");
-    if (game.data.products[a].amount > 99) game.achievements.award("Deja vu?");
+    a = escapeSpace("Song Factory");
+    if (game.data.products[a].amount > 0) game.achievements.award("Song Factory");
+    if (game.data.products[a].amount > 49) game.achievements.award("Steady Production");
+    if (game.data.products[a].amount > 99) game.achievements.award("Booming Production");
   },
 
   changeBulk: function(amount) {
