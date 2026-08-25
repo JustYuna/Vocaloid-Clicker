@@ -1,4 +1,10 @@
-:root {
+/* • • • • • • • • • • • • • • • •
+Copyright (C) 2026 Yuna2077 - All rights Reserved
+You may use, distribute or modify this code under the terms of AGPLv3 license.
+    License: https://choosealicense.com/licenses/agpl-3.0/
+ • • • • • • • • • • • • • • • • */
+ 
+ :root {
     --color-main: rgb(100, 115, 175);
     --color-darker-main: rgb(75, 100, 145);
     --color-darkest-main: rgb(50, 75, 125);
@@ -47,6 +53,26 @@ div,span,h1,h2,h3,h4,h5,h6,p{
 
 .background {
     opacity: 0.1;
+}
+
+.contribute {
+    position: absolute;
+    left: 33%;
+    top: 15%;
+    width: 30%;
+
+    padding: 0.5em;
+    border-style: dashed;
+    border-radius: 25px;
+    border-color: rgb(100, 150, 100);
+
+    background: rgb(200, 250, 200);
+
+    visibility: hidden;
+}
+.contribute h3, h2 {
+    width: 100%;
+    text-align: center;
 }
 
 .topbar {
@@ -388,3 +414,14 @@ div.clickEffect {
     text-align: center;
     width: 100%;
 }
+
+/*  • • • • • • • • • • • • • • • •
+    ╔═══════════════════════════════════════════════════════════════════════════════╗
+    ║ ██╗   ██╗██╗   ██╗███╗   ██╗ █████╗       ██████╗ ██████╗ ██████╗ ███████╗
+    ║ ╚██╗ ██╔╝██║   ██║████╗  ██║██╔══██╗     ██╔════╝██╔═══██╗██╔══██╗██╔════╝
+    ║  ╚████╔╝ ██║   ██║██╔██╗ ██║███████║     ██║     ██║   ██║██║  ██║█████╗
+    ║   ╚██╔╝  ██║   ██║██║╚██╗██║██╔══██║     ██║     ██║   ██║██║  ██║██╔══╝
+    ║    ██║   ╚██████╔╝██║ ╚████║██║  ██║     ╚██████╗╚██████╔╝██████╔╝███████╗
+    ║    ╚═╝    ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═╝      ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝
+    ╚═══════════════════════════════════════════════════════════════════════════════╝
+ • • • • • • • • • • • • • • • • */

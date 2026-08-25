@@ -711,14 +711,14 @@ game.loop = function () {
 game.startup = function () {
   var data = game.storage.get();
 
-  // Migrate cause theres already a page where users have data
-  if (data.upgrades) {
-    data.products = data.upgrades;
-    delete data.ugprades;
-  }
-
   if (data != null && data != "undefined") {
     data = JSON.parse(data);
+
+    // Migrate cause theres already a page where users have data
+    if (data["upgrades"]) {
+      data.products = data.upgrades;
+      delete data.ugprades;
+    }
 
     // add missing data for when i add new values
     for (i in game.data) {
