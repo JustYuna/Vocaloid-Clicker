@@ -421,19 +421,6 @@ game.products = {
 };
 
 { // hope this makes managing data easier
-  /*
-  10, 1
-  100, 2,
-  1_250, 8,
-  13_500, 50,
-  140_000, 250
-  1_500_000, 750,
-  7_500_000, 3_000,
-  25e6, 10_000,
-  100e6, 45_000,
-  650e6, 145_000,
-  2.5e9, 250_000
-  */
   game.products.new("Hatsune Miku", "Migu is cuter anyways...", 10, 1);
   game.products.new("Kagamine Twins", "Just like Kagamine Len", 100, 2);
   game.products.new("Magurine Luka", "The fish will never be forgotten", 1_250, 8);
@@ -442,9 +429,10 @@ game.products = {
   game.products.new("Gumi", "In circles in circles", 1_500_000, 750);
   game.products.new("Flower", "Moves pretty abnormaly", 7_500_000, 3_000);
   game.products.new("Oliver", "Steam powered", 25e6, 10_000);
-  game.products.new("Yazuki Yukari", "Sent a rabbit to moon", 100e6, 45_000);
-  game.products.new("Kasane Teto", "Eats baguettes and produces songs", 600e6, 145_000);
-  game.products.new("Kaai Yuki", " ITS FREAKIM WIMDY", 2.5e9, 250_000);
+  game.products.new("Yazuki Yukari", "Sent a rabbit to moon", 100e6, 30_000);
+  game.products.new("Kasane Teto", "Eats baguettes and produces songs", 600e6, 75_000);
+  game.products.new("Kaai Yuki", "ITS FREAKIM WIMDY", 2.5e9, 125_000);
+  game.products.new("Song Factory", "Just like ai, no one likes it but its here.", 45e9, 250_000);
 };
 
 game.achievements = {
