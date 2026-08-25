@@ -25,7 +25,8 @@ function b64_to_utf8(str) {
 
 
 function escapeRegExp(str) { return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"); };
-function escapeSpace(str) { return str.replace(" ", "") }; // seems like what i needed was so easy to make
+function escapeSpace(str) { return str.replace(" ", ""); }; // seems like what i needed was so easy to make
+function chooseArray(arr) { return arr[Math.floor(Math.random()*arr.length)]; };
 
 
 var game = {};
@@ -753,6 +754,14 @@ game.startup = function () {
       d.parentElement.removeChild(d);
     }.bind(this));
   };
+
+  var b = "";
+  var bc = 0;
+  do {
+    b += chooseArray([ "+", "-" ]) + " "
+    bc++;
+  } while (bc < 10_000);
+  document.querySelector("#background").innerHTML = b;
 
   game.loop();
   game.loaded = true;
