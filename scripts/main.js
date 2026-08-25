@@ -482,7 +482,7 @@ game.achievements = {
     game.data.achievements[escapeSpace(name)] = me;
   },
   award: function (name) {
-    if (!game.data.achievements[escapeSpace(name)]) return console.log("Trying to set null achievement " + escapeSpace(name));
+    if (!game.data.achievements[escapeSpace(name)]) return console.log("Trying to set null achievement "+escapeSpace(name)+" "+name);
     if (game.data.achievements[escapeSpace(name)]?.earned) return;
 
     game.note.new("~ Achievement Unlocked ~", name, "", 120);
@@ -536,7 +536,7 @@ game.achievements = {
   game.achievements.newTiered("Stardust", "", "Yazuki Yukari", 2);
 
   game.achievements.newTiered("Kasane Teto", "", "Kasane Teto", 0);
-  game.achievements.newTiered("Baguette lover", "", "Kasane Teto", 1);
+  game.achievements.newTiered("Baguette Lover", "", "Kasane Teto", 1);
   game.achievements.newTiered("Teto Territory", "", "Kasane Teto", 2);
 
   game.achievements.newTiered("Song Factory", "", "Song Factory", 0);
@@ -570,7 +570,7 @@ game.clickFunctions = {
 
     a = escapeSpace("Kagamine Twins");
     if (game.data.products[a].amount > 0) game.achievements.award("Kagamine Twins");
-    if (game.data.products[a].amount > 49) game.achievements.award("2 fo 1");
+    if (game.data.products[a].amount > 49) game.achievements.award("2 for 1");
     if (game.data.products[a].amount > 99) game.achievements.award("ADDIKT ADDIKT");
 
     a = escapeSpace("Magurine Luka");
@@ -682,7 +682,8 @@ game.logs = {
 {
   game.logs.add("2026.08.26", [
     { text: "Added logs.", size: 0 },
-    { text: "Notes can be removed by clicking them now.", size: 0 }
+    { text: "Notes can be removed by clicking them now.", size: 0 },
+    { text: "Fixed achievement errors", size: 0 }
   ]);
   game.logs.add("2026.08.25", [
     { text: "Added better indicator for when you can afford products.", size: 0 },
@@ -758,6 +759,16 @@ game.startup = function () {
     for (i in data.products) {
       if (game.data.products[i] == null) {
         delete game.products[i];
+      };
+    };
+    for (i in game.data.achievements) {
+      if (data.achievements[i] == null) {
+        data.achievements[i] = game.data.achievements[i];
+      };
+    };
+    for (i in data.achievements) {
+      if (game.data.achievements[i] == null) {
+        delete game.achievements[i];
       };
     };
 
