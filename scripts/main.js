@@ -371,6 +371,14 @@ game.delays = {
     perform: function() {
       game.data.secondsPassed++;
     }
+  },
+  bonus: {
+    delay: 0,
+    interval: 5 * game.tick,
+    perform: function() {
+      var str = '<div><button class="bonusButton"></button></div>';
+      document.innerHTML+=str;
+    }
   }
 };
 game.loaded = false;
@@ -393,6 +401,9 @@ game.data = {
   incomeMultiplier: 1,
   clickIncome: 1,
   clickMultiplier: 1,
+  rampage: false,
+  rampageMultiplierClick: 1,
+  rampageMultiplierIncome: 1,
   products: {},
   achievements: {}
 };
@@ -410,7 +421,6 @@ game.products = {
     me.desc = desc;
     me.cost = cost;
     me.income = income;
-    me.unlocked = false;
     me.amount = 0;
     game.products.id++;
 
@@ -683,7 +693,8 @@ game.logs = {
   game.logs.add("2026.08.26", [
     { text: "Added logs.", size: 0 },
     { text: "Notes can be removed by clicking them now.", size: 0 },
-    { text: "Fixed achievement errors", size: 0 }
+    { text: "Fixed achievement errors", size: 0 },
+    { text: "Made data more save", size: 0 }
   ]);
   game.logs.add("2026.08.25", [
     { text: "Added better indicator for when you can afford products.", size: 0 },
@@ -740,39 +751,16 @@ game.startup = function () {
       delete data.ugprades;
     }
 
-    // add missing data for when i add new values
-    for (i in game.data) {
-      if (!data[i]) {
-        console.log("Added " + i + " to outdated data");
-        data[i] = game.data[i];
-      };
+    for (i in data) {
+      if (game.data[i] != data[i])
+        {
+          const type=typeof game.data[i];
+          if (type == "function" || type == "object" || type == "bigint" || type == "undefined") continue;
+          game.data[i] = data[i];
+        };
     };
-
-    // Add good products
-    for (i in game.data.products) {
-      if (data.products[i] == null) {
-        data.products[i] = game.data.products[i];
-      };
-    };
-
-    // Remove stupid products
-    for (i in data.products) {
-      if (game.data.products[i] == null) {
-        delete game.products[i];
-      };
-    };
-    for (i in game.data.achievements) {
-      if (data.achievements[i] == null) {
-        data.achievements[i] = game.data.achievements[i];
-      };
-    };
-    for (i in data.achievements) {
-      if (game.data.achievements[i] == null) {
-        delete game.achievements[i];
-      };
-    };
-
-    game.data = data;
+    for (i in data.products) if (game.data.products[i].amount != data.products[i].amount) game.data.products[i].amount = data.products[i].amount;
+    for (i in data.achievements) if (game.data.achievements[i].earned != data.achievements[i].earned) game.data.achievements[i].earned = data.achievements[i].earned;
   };
 
   document.querySelector("#logs").innerHTML=game.logs.data;
@@ -780,7 +768,7 @@ game.startup = function () {
   // Source - https://stackoverflow.com/a/34348306
   // Posted by RegarBoy, modified by community. See post 'Timeline' for change history
   // Retrieved 2026-08-25, License - CC BY-SA 4.0
-  // modified by Yuna2077 (2026.08.24)
+  // modified by Yuna2077 (2026.08.25)
   document.onmousemove = function(e) {
     game.mouse.X = e.clientX;
     game.mouse.Y = e.clientY;
@@ -792,7 +780,7 @@ game.startup = function () {
     d.style.left = game.mouse.X + "px";
     document.body.appendChild(d);
 	  d.addEventListener('animationend',function() {
-      d.parentElement.removeChild(d);
+    d.parentElement.removeChild(d);
     }.bind(this));
   };
 
