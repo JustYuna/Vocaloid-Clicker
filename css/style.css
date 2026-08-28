@@ -224,6 +224,19 @@ div,span,h1,h2,h3,h4,h5,h6,p{
     content: url('../assets/images/MiguCircle.png');
 }
 
+.main.sunrays {
+    position: absolute;
+    width: 296px;
+    height: 296px;
+    left: -148px;
+    top: -148px;
+
+    background: url(../assets/img/sunrays.png);
+    background-size: cover;
+
+    z-index: -1;
+}
+
 div.buttonClickEffect {
     position: fixed;
     box-sizing: border-box;
@@ -293,6 +306,16 @@ div.clickEffect {
     border-radius: 15px;
     border-style: dashed;
     border-color: rgb(150, 100, 150);
+    transition-duration: 150ms;
+}
+.note:hover {
+    width: 90%;
+    background-color: rgb(250, 150, 150);
+    padding: 1em;
+    box-shadow: 5px 5px 5px var(--color-box-shadow);
+    border-radius: 15px;
+    border-style: dashed;
+    border-color: rgb(150, 50, 50);
 }
 
 .section.right {

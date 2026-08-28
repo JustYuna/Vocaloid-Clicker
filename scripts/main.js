@@ -343,41 +343,54 @@ game.sync = {
 // • • • • • • • • • • • • • • • •
 
 game.tick = 30;
+game.cache.clove = 0;
 game.delays = {
+  master: 0,
   save: {
     delay: 0,
-    interval: 60 * game.tick, // 1 = 1sec
+    interval: 60, // 1 = 1sec
     perform: function() {
       game.storage.save();
     }
   },
   guiSync: {
     delay: 0,
-    interval: 1 * game.tick,
+    interval: 1,
     perform: function() {
       game.sync.products();
     }
   },
   siteTitle: {
     delay: 0,
-    interval: 5 * game.tick,
+    interval: 5,
     perform: function() {
       document.title = game.helper.format.abbreviate(Math.round(game.data.songs)) + " songs - Vocaloid Clicker";
     }
   },
   time: {
     delay: 0,
-    interval: 1 * game.tick,
+    interval: 1,
     perform: function() {
       game.data.secondsPassed++;
     }
   },
-  bonus: {
+  clove: {
     delay: 0,
-    interval: 5 * game.tick,
+    interval: 5,
     perform: function() {
-      var str = '<div><button class="bonusButton"></button></div>';
-      document.innerHTML+=str;
+      game.cache.clove+=1;
+      console.log(game.cache.clove);
+      var id="clove"+game.cache.clove;
+      var s=Math.max(Math.random()*100, 35);
+      var d = document.createElement("div");
+      d.id=id;
+      d.style=`position: absolute; left: ${Math.round(Math.random() * 500)}px; bottom: ${Math.round(Math.random() * 500)}px;`
+      d.innerHTML=`<div style="z-index: 99; background: url(../assets/img/klee.png); background-size: cover; width: ${s}px; height: ${s}px;"></div>`;
+      document.body.appendChild(d);
+      setTimeout(function(){
+        game.cache.clove--;
+        var d=document.querySelector("#"+id)?.remove();
+      }, 5000);
     }
   }
 };
@@ -401,6 +414,7 @@ game.data = {
   incomeMultiplier: 1,
   clickIncome: 1,
   clickMultiplier: 1,
+  cloveClicked: 0,
   rampage: false,
   rampageMultiplierClick: 1,
   rampageMultiplierIncome: 1,
@@ -509,6 +523,15 @@ game.achievements = {
   game.achievements.newTiered("Golden", "Earn 1.000.000 songs", "", { todo: "overwrite", amount: 1_000_000 });
   game.achievements.newTiered("Diamond", "Earn 1 Billion songs", "", { todo: "overwrite", amount: 1_000_000_000 });
 
+  game.achievements.id=100;
+  game.achievements.new("Button", "Click the button once");
+  game.achievements.new("Double Click", "Click the button twice");
+  game.achievements.new("Clicker", "Click the button 100 times");
+  game.achievements.new("Clicktastic", "Click the button 1.000 Times");
+  game.achievements.new("Master of Clicks", "Click the button 10.000 Times");
+  game.achievements.new("Finger of steel", "Click the button 100.000 Times");
+
+  game.achievements.id=10000;
   game.achievements.newTiered("Hatsune Miku", "", "Hatsune Miku", 0);
   game.achievements.newTiered("Self made man", "", "Hatsune Miku", 1);
   game.achievements.newTiered("Migu was here", "", "Hatsune Miku", 2);
@@ -646,6 +669,13 @@ game.clickFunctions = {
     game.data.totalSongs += a;
     game.data.clicked++;
 
+
+    if (game.data.clicked>0) game.achievements.award("Button");
+    if (game.data.clicked>1) game.achievements.award("Double Click");
+    if (game.data.clicked>99) game.achievements.award("Clicker");
+    if (game.data.clicked>999) game.achievements.award("Clicktastic");
+    if (game.data.clicked>9_999) game.achievements.award("Master of Clicks");
+    if (game.data.clicked>99_999) game.achievements.award("Finger of steel");
     /*
     var d = document.createElement("div");
     d.className = "buttonClickEffect";
@@ -690,11 +720,16 @@ game.logs = {
 };
 
 {
+  game.logs.add("2026.08.27", [
+    { text: "Added clovers with no game mechanic yet.", size: 0 },
+    { text: "Notes have a hover effect now.", size: 0 }
+  ]);
   game.logs.add("2026.08.26", [
     { text: "Added logs.", size: 0 },
     { text: "Notes can be removed by clicking them now.", size: 0 },
     { text: "Fixed achievement errors", size: 0 },
-    { text: "Made data more save", size: 0 }
+    { text: "Made data more save", size: 0 },
+    { text: "Achievements for clicking the button", size: 0 }
   ]);
   game.logs.add("2026.08.25", [
     { text: "Added better indicator for when you can afford products.", size: 0 },
@@ -718,21 +753,27 @@ game.loop = function () {
     game.data.totalSongs += game.data.income / game.tick;
     game.sync.pointHeader();
 
-    if (new Function("return " + "game.data.totalSongs>0")()) game.achievements.award("First song");
-    if (new Function("return " + "game.data.totalSongs>99")()) game.achievements.award("Small published");
-    if (new Function("return " + "game.data.totalSongs>999")()) game.achievements.award("Song production");
-    if (new Function("return " + "game.data.totalSongs>1336")()) game.achievements.award("VIP");
-    if (new Function("return " + "game.data.totalSongs>99999")()) game.achievements.award("Silver");
-    if (new Function("return " + "game.data.totalSongs>999999")()) game.achievements.award("Golden");
-    if (new Function("return " + "game.data.totalSongs>9999999")()) game.achievements.award("Diamond");
+    if (game.data.totalSongs>0) game.achievements.award("First song");
+    if (game.data.totalSongs>99) game.achievements.award("Small published");
+    if (game.data.totalSongs>999) game.achievements.award("Song production");
+    if (game.data.totalSongs>1336) game.achievements.award("VIP");
+    if (game.data.totalSongs>99_999) game.achievements.award("Silver");
+    if (game.data.totalSongs>999_999) game.achievements.award("Golden");
+    if (game.data.totalSongs>9_999_999) game.achievements.award("Diamond");
 
-    for (const [key, value] of Object.entries(game.delays)) {
-      value.delay++;
-      if (value.delay > value.interval) {
-        value.delay = 0;
-        value.perform();
+    game.delays.master++;
+    if (game.delays.master > game.tick-1)
+    {
+      game.delays.master=0;
+      for (const [key, value] of Object.entries(game.delays)) {
+        if (key=="master")continue;
+        value.delay++;
+        if (value.delay > value.interval) {
+          value.delay = 0;
+          value.perform();
+        };
       };
-    };
+    }
 
     game.note.logic();
 
