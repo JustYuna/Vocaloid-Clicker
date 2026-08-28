@@ -720,7 +720,7 @@ game.logs = {
 };
 
 {
-  game.logs.add("2026.08.27", [
+  game.logs.add("2026.08.28", [
     { text: "Added clovers with no game mechanic yet.", size: 0 },
     { text: "Notes have a hover effect now.", size: 0 }
   ]);
