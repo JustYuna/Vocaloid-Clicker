@@ -11,7 +11,7 @@ This "Game" is heavely inspired by cookie clicker
 
 ---
 
-#### Play here: [Vocaloid Clicker](https://justyuna.github.io/Volcaloid-Clicker/)
+#### Play here: [Vocaloid Clicker](https://justyuna.github.io/Vocaloid-Clicker/)
 #### Support Server: [Yuna Codes](https://discord.gg/sPQFM9Rj33)
 #### Helper Server: [Vocalhaven](https://discord.gg/rPAMv59wPM)
 
