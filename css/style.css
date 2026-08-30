@@ -411,31 +411,33 @@ div.clickEffect {
 .product.holder {
     position: absolute;
     width: 100%;
-    height: 8%;
+    height: 10%;
 }
 
 .product.locked {
     position: absolute;
-    height: 100%;
+    height: 75px;
     width: 90%;
     background-color: rgb(150, 200, 150);
-    padding: 1em;
     box-shadow: 5px 5px 5px var(--color-box-shadow);
+
     border-radius: 15px;
     border-style: dashed;
     border-color: rgb(50, 100, 50);
+    padding: 0;
 }
 
 .product.unlocked {
     position: absolute;
-    height: 100%;
+    height: 75px;
     width: 90%;
     background-color: rgb(200, 250, 200);
-    padding: 1em;
     box-shadow: 5px 5px 5px var(--color-box-shadow);
+
     border-radius: 15px;
     border-style: dashed;
     border-color: rgb(100, 150, 100);
+    padding: 0;
 }
 
 .product.unlocked:hover {
@@ -444,25 +446,36 @@ div.clickEffect {
 
 .product.title {
     position: absolute;
-    left: 10px;
-    top: 10px;
+    left: 75px;
+    top: 15px;
     text-align: left;
+
+    font-size: 20px;
 }
 
 .product.sub_title {
     position: absolute;
-    left: 10px;
-    bottom: 10px;
+    left: 75px;
+    top: 40px;
     text-align: left;
+    font-size: 15px;
 }
 
 .product.amount {
     position: absolute;
-    right: 15%;
-    top: 15%;
+    right: 15px;
+    top: 10px;
     text-align: right;
-    font-size: 35px;
+    font-size: 45px;
     opacity: 0.5;
+}
+
+.product.icon {
+    position: absolute;
+    height: 55px;
+    width: 55px;
+    top: 10px;
+    left: 10px;
 }
 
 .title {

@@ -62,6 +62,9 @@ game.helper.format = {
     return formatted + suffixes[suffixNum];
   }
 };
+game.helper.getImage = {
+  
+};
 game.helper.math = {
   /**
    * Returns the price of given data via upgrade formula
@@ -282,28 +285,31 @@ game.sync = {
       var income = game.helper.format.abbreviate(data.income);
 
       if (game.data.totalSongs < data.cost) {
-        document.querySelector("#products").innerHTML += `<div class="product holder"; style="top: ${10 * id}%;">
+        document.querySelector("#products").innerHTML += `<div class="product holder"; style="top: ${12 * id}%;">
                             <button class="product locked">
                               <div class="product title">???</div>
                               <div class="product title">???</div>
                               <div class="product amount">0</div>
+                              <div class="product icon" style="background: url(${data.icon});"></div>
                             </button>
                         </div>`;
       } else {
         if (game.data.songs < price) {
-          document.querySelector("#products").innerHTML += `<div class="product holder"; style="top: ${10 * id}%;">
+          document.querySelector("#products").innerHTML += `<div class="product holder"; style="top: ${12 * id}%;">
                               <button class="product locked"; onclick="game.onClicked('buy_product', '${i}')">
                                 <div class="product title">${data.name}</div>
                                 <div class="product sub_title">${cost}</div>
                                 <div class="product amount">${data.amount}</div>
+                                <div class="product icon" style="background: url(${data.icon});"></div>
                               </button>
                           </div>`;
         } else {
-          document.querySelector("#products").innerHTML += `<div class="product holder"; style="top: ${10 * id}%;">
+          document.querySelector("#products").innerHTML += `<div class="product holder"; style="top: ${12 * id}%;">
                               <button class="product unlocked"; onclick="game.onClicked('buy_product', '${i}')">
                                 <div class="product title">${data.name}</div>
                                 <div class="product sub_title">${cost}</div>
                                 <div class="product amount">${data.amount}</div>
+                                <div class="product icon" style="background: url(${data.icon}); background-size: cover; "></div>
                               </button>
                           </div>`;
           };
@@ -337,6 +343,20 @@ game.sync = {
     };
   }
 };
+
+// • • • • • • • • • • • • • • • •
+// Clove effects
+// • • • • • • • • • • • • • • • •
+
+game.cloveEffects = [
+  award_50Procent=function(){const d=game.data.songs*0.5;game.data.songs+=d;game.data.totalSongs+=d;game.note.new("~ Clove ~", "+"+game.helper.format.abbreviate(Math.round(d))+" Songs");},
+  award_50Procent=function(){const d=game.data.songs*0.5;game.data.songs+=d;game.data.totalSongs+=d;game.note.new("~ Clove ~", "+"+game.helper.format.abbreviate(Math.round(d))+" Songs");},
+  award_50Procent=function(){const d=game.data.songs*0.5;game.data.songs+=d;game.data.totalSongs+=d;game.note.new("~ Clove ~", "+"+game.helper.format.abbreviate(Math.round(d))+" Songs");},
+  x2_600sec=function(){game.data.clove.boost=2;game.data.clove.life=600*game.tick;game.note.new("~ Clove ~", "x2 Songs for 600sec");},
+  x2_600sec=function(){game.data.clove.boost=2;game.data.clove.life=600*game.tick;game.note.new("~ Clove ~", "x2 Songs for 600sec");},
+  x2_600sec=function(){game.data.clove.boost=2;game.data.clove.life=600*game.tick;game.note.new("~ Clove ~", "x2 Songs for 600sec");},
+  x7_300sec=function(){game.data.clove.boost=7;game.data.clove.life=300*game.tick;game.note.new("~ Clove ~", "x7 Songs for 300sec");}
+];
 
 // • • • • • • • • • • • • • • • •
 // Main settings
@@ -378,8 +398,7 @@ game.delays = {
     delay: 0,
     interval: 5,
     perform: function() {
-      game.cache.clove+=1;
-      console.log(game.cache.clove);
+      game.cache.clove++;
       var id="clove"+game.cache.clove;
       var s=Math.max(Math.random()*100, 35);
       var d = document.createElement("div");
@@ -387,8 +406,13 @@ game.delays = {
       d.style=`position: absolute; left: ${Math.round(Math.random() * 500)}px; bottom: ${Math.round(Math.random() * 500)}px;`
       d.innerHTML=`<div style="z-index: 99; background: url(../assets/img/klee.png); background-size: cover; width: ${s}px; height: ${s}px;"></div>`;
       document.body.appendChild(d);
+      d.onclick = function() {
+        var d=document.querySelector("#"+id)?.remove();
+        var e=chooseArray(game.cloveEffects);
+        do {e=chooseArray(game.cloveEffects);} while (!e);
+        e();
+      };
       setTimeout(function(){
-        game.cache.clove--;
         var d=document.querySelector("#"+id)?.remove();
       }, 5000);
     }
@@ -414,10 +438,11 @@ game.data = {
   incomeMultiplier: 1,
   clickIncome: 1,
   clickMultiplier: 1,
-  cloveClicked: 0,
   rampage: false,
   rampageMultiplierClick: 1,
   rampageMultiplierIncome: 1,
+  clove: { life: 0, boost: 0 },
+  cloveClicked: 0,
   products: {},
   achievements: {}
 };
@@ -428,7 +453,7 @@ game.data = {
 
 game.products = {
   id: 0,
-  new: function (name, desc, cost, income) {
+  new: function (name, desc, cost, income, icon) {
     var me = {};
     me.id = game.products.id;
     me.name = name;
@@ -436,6 +461,7 @@ game.products = {
     me.cost = cost;
     me.income = income;
     me.amount = 0;
+    me.icon = icon;
     game.products.id++;
 
     game.data.products[escapeSpace(name)] = me;
@@ -443,18 +469,18 @@ game.products = {
 };
 
 { // hope this makes managing data easier
-  game.products.new("Hatsune Miku", "Migu is cuter anyways...", 10, 1);
-  game.products.new("Kagamine Twins", "Just like Kagamine Len", 100, 2);
-  game.products.new("Magurine Luka", "The fish will never be forgotten", 1_250, 8);
-  game.products.new("Hakaine Maiko", "Perfection!", 13_500, 50);
-  game.products.new("Kamui Gakupo", "Purple eggplant freak", 140_000, 250);
-  game.products.new("Gumi", "In circles in circles", 1_500_000, 750);
-  game.products.new("Flower", "Moves pretty abnormaly", 7_500_000, 3_000);
-  game.products.new("Oliver", "Steam powered", 25e6, 10_000);
-  game.products.new("Yazuki Yukari", "Sent a rabbit to moon", 100e6, 30_000);
-  game.products.new("Kasane Teto", "Eats baguettes and produces songs", 600e6, 75_000);
-  game.products.new("Kaai Yuki", "ITS FREAKIM WIMDY", 2.5e9, 125_000);
-  game.products.new("Song Factory", "Just like ai, no one likes it but its here.", 45e9, 250_000);
+  game.products.new("Hatsune Miku", "Migu is cuter anyways...", 10, 1, "../assets/img/unkown.png");
+  game.products.new("Kagamine Twins", "Just like Kagamine Len", 100, 2, "../assets/img/unkown.png");
+  game.products.new("Magurine Luka", "The fish will never be forgotten", 1_250, 8, "../assets/img/unkown.png");
+  game.products.new("Hakaine Maiko", "Perfection!", 13_500, 50, "../assets/img/unkown.png");
+  game.products.new("Kamui Gakupo", "Purple eggplant freak", 140_000, 250, "../assets/img/unkown.png");
+  game.products.new("Gumi", "In circles in circles", 1_500_000, 750, "../assets/img/unkown.png");
+  game.products.new("Flower", "Moves pretty abnormaly", 7_500_000, 3_000, "../assets/img/unkown.png");
+  game.products.new("Oliver", "Steam powered", 25e6, 10_000, "../assets/img/vocaloids/Oliver@Rory.png");
+  game.products.new("Yazuki Yukari", "Sent a rabbit to moon", 100e6, 30_000, "../assets/img/unkown.png");
+  game.products.new("Kasane Teto", "Eats baguettes and produces songs", 600e6, 75_000, "../assets/img/unkown.png");
+  game.products.new("Kaai Yuki", "ITS FREAKIM WIMDY", 2.5e9, 125_000, "../assets/img/unkown.png");
+  game.products.new("Song Factory", "Just like ai, no one likes it but its here.", 45e9, 250_000, "../assets/img/unkown.png");
 };
 
 game.achievements = {
@@ -785,12 +811,6 @@ game.startup = function () {
 
   if (data != null && data != "undefined") {
     data = JSON.parse(data);
-
-    // Migrate cause theres already a page where users have data
-    if (data["upgrades"]) {
-      data.products = data.upgrades;
-      delete data.ugprades;
-    }
 
     for (i in data) {
       if (game.data[i] != data[i])
