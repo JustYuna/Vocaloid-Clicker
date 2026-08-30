@@ -353,8 +353,7 @@ game.cloveEffects = [
   award_25Procent=function(){const d=game.data.songs*0.25;game.data.songs+=d;game.data.totalSongs+=d;game.note.new("~ Clove ~", "+"+game.helper.format.abbreviate(Math.round(d))+" Songs");},
   award_25Procent=function(){const d=game.data.songs*0.25;game.data.songs+=d;game.data.totalSongs+=d;game.note.new("~ Clove ~", "+"+game.helper.format.abbreviate(Math.round(d))+" Songs");},
   award_25Procent=function(){const d=game.data.songs*0.25;game.data.songs+=d;game.data.totalSongs+=d;game.note.new("~ Clove ~", "+"+game.helper.format.abbreviate(Math.round(d))+" Songs");},
-  award_25Procent=function(){const d=game.data.songs*0.25;game.data.songs+=d;game.data.totalSongs+=d;game.note.new("~ Clove ~", "+"+game.helper.format.abbreviate(Math.round(d))+" Songs");},
-  award_25Procent=function(){const d=game.data.songs*0.25;game.data.songs+=d;game.data.totalSongs+=d;game.note.new("~ Clove ~", "+"+game.helper.format.abbreviate(Math.round(d))+" Songs");},
+  award_25Procent=function(){const d=game.data.songs*0.25;game.data.songs+=d;game.data.totalSongs+=d;game.note.new("~ Clove ~", "+"+game.helper.format.abbreviate(Math.round(d))+" Songs");}
 ];
 
 // • • • • • • • • • • • • • • • •
