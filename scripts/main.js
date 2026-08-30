@@ -350,12 +350,11 @@ game.sync = {
 
 game.cloveEffects = [
   award_50Procent=function(){const d=game.data.songs*0.5;game.data.songs+=d;game.data.totalSongs+=d;game.note.new("~ Clove ~", "+"+game.helper.format.abbreviate(Math.round(d))+" Songs");},
-  award_50Procent=function(){const d=game.data.songs*0.5;game.data.songs+=d;game.data.totalSongs+=d;game.note.new("~ Clove ~", "+"+game.helper.format.abbreviate(Math.round(d))+" Songs");},
-  award_50Procent=function(){const d=game.data.songs*0.5;game.data.songs+=d;game.data.totalSongs+=d;game.note.new("~ Clove ~", "+"+game.helper.format.abbreviate(Math.round(d))+" Songs");},
-  x2_600sec=function(){game.data.clove.boost=2;game.data.clove.life=600*game.tick;game.note.new("~ Clove ~", "x2 Songs for 600sec");},
-  x2_600sec=function(){game.data.clove.boost=2;game.data.clove.life=600*game.tick;game.note.new("~ Clove ~", "x2 Songs for 600sec");},
-  x2_600sec=function(){game.data.clove.boost=2;game.data.clove.life=600*game.tick;game.note.new("~ Clove ~", "x2 Songs for 600sec");},
-  x7_300sec=function(){game.data.clove.boost=7;game.data.clove.life=300*game.tick;game.note.new("~ Clove ~", "x7 Songs for 300sec");}
+  award_25Procent=function(){const d=game.data.songs*0.25;game.data.songs+=d;game.data.totalSongs+=d;game.note.new("~ Clove ~", "+"+game.helper.format.abbreviate(Math.round(d))+" Songs");},
+  award_25Procent=function(){const d=game.data.songs*0.25;game.data.songs+=d;game.data.totalSongs+=d;game.note.new("~ Clove ~", "+"+game.helper.format.abbreviate(Math.round(d))+" Songs");},
+  award_25Procent=function(){const d=game.data.songs*0.25;game.data.songs+=d;game.data.totalSongs+=d;game.note.new("~ Clove ~", "+"+game.helper.format.abbreviate(Math.round(d))+" Songs");},
+  award_25Procent=function(){const d=game.data.songs*0.25;game.data.songs+=d;game.data.totalSongs+=d;game.note.new("~ Clove ~", "+"+game.helper.format.abbreviate(Math.round(d))+" Songs");},
+  award_25Procent=function(){const d=game.data.songs*0.25;game.data.songs+=d;game.data.totalSongs+=d;game.note.new("~ Clove ~", "+"+game.helper.format.abbreviate(Math.round(d))+" Songs");},
 ];
 
 // • • • • • • • • • • • • • • • •
@@ -441,7 +440,6 @@ game.data = {
   rampage: false,
   rampageMultiplierClick: 1,
   rampageMultiplierIncome: 1,
-  clove: { life: 0, boost: 0 },
   cloveClicked: 0,
   products: {},
   achievements: {}
@@ -746,6 +744,10 @@ game.logs = {
 };
 
 {
+  game.logs.add("2026.08.31", [
+    { text: "Added images to products.", size: 0 },
+    { text: "Added boost's for cloves, more soon.", size: 0 }
+  ]);
   game.logs.add("2026.08.28", [
     { text: "Added clovers with no game mechanic yet.", size: 0 },
     { text: "Notes have a hover effect now.", size: 0 }
