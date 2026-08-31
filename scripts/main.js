@@ -402,7 +402,7 @@ game.delays = {
       var d = document.createElement("div");
       d.id=id;
       d.style=`position: absolute; left: ${Math.round(Math.random() * 500)}px; bottom: ${Math.round(Math.random() * 500)}px;`
-      d.innerHTML=`<div style="z-index: 99; background: url(../assets/img/klee.png); background-size: cover; width: ${s}px; height: ${s}px;"></div>`;
+      d.innerHTML=`<div style="z-index: 99; background: url(../assets/img/clove.png); background-size: cover; width: ${s}px; height: ${s}px;"></div>`;
       document.body.appendChild(d);
       d.onclick = function() {
         var d=document.querySelector("#"+id)?.remove();
